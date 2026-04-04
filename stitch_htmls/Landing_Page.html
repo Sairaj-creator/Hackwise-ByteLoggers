@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Culinary Editorial - Verdant AI Kitchen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#00691a",
+                    "surface-bright": "#f6f6f6",
+                    "surface-container-low": "#f0f1f1",
+                    "surface-container-high": "#e1e3e3",
+                    "outline-variant": "#acadad",
+                    "primary-container": "#91f78e",
+                    "on-surface": "#2d2f2f",
+                    "secondary": "#874e00",
+                    "tertiary-container": "#c1fd7c",
+                    "background": "#f6f6f6",
+                    "inverse-surface": "#0c0f0f",
+                    "secondary-container": "#ffc791",
+                    "tertiary-dim": "#345900",
+                    "inverse-primary": "#91f78e",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#4f2c00",
+                    "primary-dim": "#005d16",
+                    "on-tertiary-fixed": "#2c4d00",
+                    "secondary-fixed": "#ffc791",
+                    "on-secondary-fixed-variant": "#774400",
+                    "outline": "#767777",
+                    "surface": "#f6f6f6",
+                    "surface-dim": "#d3d5d5",
+                    "on-primary": "#d1ffc8",
+                    "inverse-on-surface": "#9c9d9d",
+                    "error-container": "#f95630",
+                    "on-secondary": "#fff0e5",
+                    "error-dim": "#b92902",
+                    "on-tertiary-container": "#396100",
+                    "on-error": "#ffefec",
+                    "tertiary-fixed": "#c1fd7c",
+                    "secondary-dim": "#764400",
+                    "surface-tint": "#006b1b",
+                    "on-tertiary": "#d9ffab",
+                    "tertiary-fixed-dim": "#b3ee6f",
+                    "surface-container": "#e7e8e8",
+                    "on-tertiary-fixed-variant": "#406c00",
+                    "on-error-container": "#520c00",
+                    "on-primary-fixed": "#00480f",
+                    "on-background": "#2d2f2f",
+                    "on-secondary-container": "#6a3c00",
+                    "primary": "#006b1b",
+                    "tertiary": "#3c6600",
+                    "surface-container-highest": "#dbdddd",
+                    "error": "#b02500",
+                    "on-primary-container": "#005e17",
+                    "primary-fixed-dim": "#83e881",
+                    "primary-fixed": "#91f78e",
+                    "secondary-fixed-dim": "#ffb467",
+                    "on-surface-variant": "#5a5c5c",
+                    "surface-variant": "#dbdddd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f6f6f6;
+            color: #2d2f2f;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .editorial-shadow {
+            box-shadow: 0 12px 32px rgba(45, 47, 47, 0.06);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-[#f6f6f6] dark:bg-gray-900 z-50">
+<div class="flex items-center justify-between px-6 py-4 w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional chef smiling warmly, soft studio lighting with a neutral gray background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgsnHSzUj0TCA1ghQMKtyCu4rWmA71Bg-FS7dCqIm20ebQKCTmai4WseOt4CuLpDOtR4NLQHZnzpWeke1aAyxETRgyD5rNMVEetrlauAtm8tIPgikAgz6jtBhLIyo6-1OTn_KQr3BzWQL4U1VUwUYY_cSV2e3EOoTnhoQ7agtsECWgK3J18tZmTpO8llGOenOJ18m6KSYmV02VkNGBIRJRrmGo37XY5bcy_lBDAO2yK0buuQseY1Txuv53HF6970uAm8DT6USJuuab"/>
+</div>
+</div>
+<div class="text-xl font-bold text-[#006b1b] dark:text-green-500 italic font-['Plus_Jakarta_Sans'] tracking-tight">
+                The Culinary Editorial
+            </div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[#006b1b] dark:text-green-500 cursor-pointer hover:opacity-80 transition-opacity">
+                    location_on
+                </span>
+</div>
+</div>
+</header>
+<main class="min-h-screen">
+<!-- Hero Section -->
+<section class="relative w-full max-w-screen-xl mx-auto px-6 pt-12 pb-24 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+<!-- Hero Content -->
+<div class="md:col-span-6 z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label text-[10px] font-bold uppercase tracking-widest">AI-Powered Gastronomy</span>
+</div>
+<h1 class="text-5xl md:text-7xl font-extrabold text-on-surface leading-[1.1] mb-6 tracking-tight">
+                    Elevate Your <br/>
+<span class="text-primary italic">Kitchen Intelligence</span>
+</h1>
+<p class="text-on-surface-variant text-lg md:text-xl max-w-md leading-relaxed mb-10 font-body">
+                    A premium digital sous-chef designed to transform your fridge leftovers into editorial-quality culinary masterpieces.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="px-10 py-4 bg-primary text-on-primary rounded-xl font-bold text-lg editorial-shadow hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-[#005d16]">
+                        Sign Up
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="px-10 py-4 bg-surface-container-lowest text-primary border border-primary/10 rounded-xl font-bold text-lg hover:bg-surface-container-low transition-all active:scale-95">
+                        Login
+                    </button>
+</div>
+</div>
+<!-- Hero Image: Overlapping Editorial Style -->
+<div class="md:col-span-6 relative mt-12 md:mt-0">
+<div class="relative w-full aspect-square md:aspect-[4/5] rounded-[2.5rem] overflow-hidden editorial-shadow transform rotate-2">
+<img alt="Delicious Meal" class="w-full h-full object-cover" data-alt="Artisanal plated roasted vegetables and quinoa bowl with vibrant citrus glaze on a ceramic plate, natural side lighting, minimalist kitchen setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcdrQpmHAJt5c8kXe40BFgl6WCApkzhFHZ-CEufZcJMTpWBoCSOy3-DgFQ-x29iiKSqInaQvJtJ6xoame2jiLe8MPUBU2TwJleOMJh2gOuBFdRWj5MMzIIpxes-8uW0fpW7eDVkssrgqnNDi9HvlR8uXqBKSfDruaUBiPtxPzfIt4R5n1i9YdcDIOp6D48s3L5OJkT36El6Dqbhm9n_3p1ZphC_bs0oqw-5EAy_x6zBqMpqyPi3U2m7WXv1arabO4sVn_I66vxXyEJ"/>
+<!-- Glassmorphism Overlay -->
+<div class="absolute bottom-6 left-6 right-6 p-6 rounded-xl bg-white/70 backdrop-blur-xl border border-white/20 editorial-shadow">
+<div class="flex items-center gap-4">
+<div class="p-2 bg-primary rounded-lg text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">kitchen</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface">Live Scanner Active</p>
+<p class="font-body text-xs text-on-surface-variant">3 Ingredients recognized in your pantry</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Accent -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary-container rounded-full blur-[80px] opacity-40 -z-10"></div>
+<div class="absolute -bottom-10 -left-10 w-60 h-60 bg-primary-container rounded-full blur-[100px] opacity-30 -z-10"></div>
+</div>
+</section>
+<!-- Bento Grid: Features -->
+<section class="w-full max-w-screen-xl mx-auto px-6 py-20">
+<h2 class="text-3xl font-bold text-on-surface mb-12 text-center">Mastering the Art of Efficiency</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Feature 1 -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-[2rem] flex flex-col md:flex-row gap-8 items-center">
+<div class="flex-1">
+<div class="w-12 h-12 bg-primary text-on-primary rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Precision Vision</h3>
+<p class="text-on-surface-variant font-body">Our proprietary AI identifies ingredients with surgical precision, suggesting recipes based on ripeness and flavor profiles.</p>
+</div>
+<div class="w-full md:w-1/2 aspect-video rounded-2xl overflow-hidden">
+<img alt="AI Scanning" class="w-full h-full object-cover" data-alt="Hands holding a smartphone scanning fresh organic basil leaves and tomatoes on a wooden table, digital scanner interface overlay" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeLaFCCE1e99QlkyahIc0UTz0CEsFNq-MNLjFidu2INc8aEWB3W6wyP4pfrZDQaRLarqCac2lH1V_B-CkSeMqhnSzayxYVMBgmrkYXGtCUBLJqdPCE1xhyBPT2rUVdk16dTP8KKTOjxETBNQK0FxCkeK83-dO7lpiKLK921OYdeOgDv_Wet7PYvZPGtU7_Nz1B_N1ZoautuYNlJH1UlI4nHZuJjGO4bMYJVGaTcwNzmzYZZES4BD0kZUbBpn9tQ765Ed-4GTnHbNf_"/>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-[2rem] editorial-shadow border border-surface-container-low">
+<div class="w-12 h-12 bg-secondary text-on-secondary rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">menu_book</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Editorial Recipes</h3>
+<p class="text-on-surface-variant font-body">Curated content that looks and tastes like it belongs in a high-end food magazine.</p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-primary text-on-primary p-8 rounded-[2rem] editorial-shadow">
+<div class="w-12 h-12 bg-primary-container text-on-primary-container rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Zero Waste</h3>
+<p class="opacity-90 font-body">Maximize your fridge's potential. Reduce food waste by 40% with intelligent ingredient substitution mapping.</p>
+</div>
+<!-- Feature 4 -->
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-[2rem] flex flex-col-reverse md:flex-row gap-8 items-center overflow-hidden">
+<div class="w-full md:w-2/3 grid grid-cols-2 gap-4">
+<div class="aspect-square rounded-2xl bg-surface-container-high animate-pulse"></div>
+<div class="aspect-square rounded-2xl bg-surface-container-high animate-pulse"></div>
+</div>
+<div class="flex-1">
+<h3 class="text-2xl font-bold mb-4">Smart Pantry</h3>
+<p class="text-on-surface-variant font-body">The Digital Sous-Chef tracks what you have and alerts you before staples run low.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / CTA -->
+<section class="w-full max-w-screen-xl mx-auto px-6 py-24">
+<div class="bg-surface-container-lowest rounded-[3rem] p-12 md:p-24 text-center editorial-shadow relative overflow-hidden">
+<div class="absolute top-0 right-0 p-12 opacity-10">
+<span class="material-symbols-outlined text-[120px]">local_dining</span>
+</div>
+<h2 class="text-4xl md:text-5xl font-extrabold mb-6">Ready to Cook?</h2>
+<p class="text-on-surface-variant text-lg max-w-xl mx-auto mb-10 font-body">Join over 50,000 home chefs who have transformed their kitchen into a Michelin-star studio.</p>
+<form class="max-w-md mx-auto flex flex-col sm:flex-row gap-4">
+<input class="flex-1 px-6 py-4 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary transition-all" placeholder="Enter your email" type="email"/>
+<button class="px-8 py-4 bg-primary text-on-primary rounded-xl font-bold hover:opacity-90 transition-all">Get Started</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-low pt-20 pb-12">
+<div class="max-w-screen-xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-outline-variant/20 pb-12 mb-12">
+<div class="col-span-1 md:col-span-1">
+<div class="text-xl font-bold text-[#006b1b] italic font-['Plus_Jakarta_Sans'] mb-6">
+                    The Culinary Editorial
+                </div>
+<p class="text-on-surface-variant text-sm font-body">Crafting intelligence for the modern kitchen, one ingredient at a time.</p>
+</div>
+<div>
+<h4 class="font-bold mb-6 font-headline">Platform</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm font-body">
+<li class="hover:text-primary cursor-pointer transition-colors">Scanner</li>
+<li class="hover:text-primary cursor-pointer transition-colors">Fridge</li>
+<li class="hover:text-primary cursor-pointer transition-colors">Premium</li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6 font-headline">Community</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm font-body">
+<li class="hover:text-primary cursor-pointer transition-colors">Blog</li>
+<li class="hover:text-primary cursor-pointer transition-colors">Chef Program</li>
+<li class="hover:text-primary cursor-pointer transition-colors">Events</li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6 font-headline">Legal</h4>
+<ul class="space-y-4 text-on-surface-variant text-sm font-body">
+<li class="hover:text-primary cursor-pointer transition-colors">Privacy</li>
+<li class="hover:text-primary cursor-pointer transition-colors">Terms</li>
+</ul>
+</div>
+</div>
+<div class="max-w-screen-xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-on-surface-variant text-xs opacity-60">© 2024 Verdant AI Kitchen. All rights reserved.</p>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">public</span>
+<span class="material-symbols-outlined text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">chat_bubble</span>
+<span class="material-symbols-outlined text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">rss_feed</span>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pt-3 pb-6 md:hidden bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl rounded-t-[1.5rem] z-50 shadow-[0_12px_32px_rgba(45,47,47,0.06)]">
+<div class="flex flex-col items-center justify-center bg-[#006b1b] text-white rounded-[1.5rem] px-5 py-2">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium uppercase tracking-widest mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#2d2f2f] dark:text-gray-400 opacity-60 hover:bg-[#f0f1f1] dark:hover:bg-gray-800 rounded-[1.5rem]">
+<span class="material-symbols-outlined">kitchen</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium uppercase tracking-widest mt-1">Fridge</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#2d2f2f] dark:text-gray-400 opacity-60 hover:bg-[#f0f1f1] dark:hover:bg-gray-800 rounded-[1.5rem]">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium uppercase tracking-widest mt-1">Scanner</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#2d2f2f] dark:text-gray-400 opacity-60 hover:bg-[#f0f1f1] dark:hover:bg-gray-800 rounded-[1.5rem]">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium uppercase tracking-widest mt-1">Favorites</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#2d2f2f] dark:text-gray-400 opacity-60 hover:bg-[#f0f1f1] dark:hover:bg-gray-800 rounded-[1.5rem]">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium uppercase tracking-widest mt-1">Settings</span>
+</div>
+</nav>
+</body></html>

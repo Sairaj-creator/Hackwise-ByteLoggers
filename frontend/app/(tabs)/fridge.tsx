@@ -1,35 +1,52 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, Modal, RefreshControl, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, RefreshControl, Alert, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { api } from '@/services/api';
-import { Colors, Spacing, Radius, CATEGORIES } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 
-const STATUS_ORDER: Record<string, number> = { critical: 0, warning: 1, expired: 2, fresh: 3 };
-const STATUS_COLORS: Record<string, { bg: string; text: string; icon: string }> = {
-  fresh: { bg: Colors.freshBg, text: Colors.fresh, icon: 'checkmark-circle' },
-  warning: { bg: Colors.warningBg, text: Colors.warning, icon: 'alert-circle' },
-  critical: { bg: Colors.criticalBg, text: Colors.critical, icon: 'flame' },
-  expired: { bg: Colors.expiredBg, text: Colors.expired, icon: 'close-circle' },
+const C = {
+  surface: '#f6f6f6',
+  onSurface: '#2d2f2f',
+  onSurfaceVariant: '#5a5c5c',
+  primary: '#006b1b',
+  onPrimary: '#d1ffc8',
+  secondary: '#874e00',
+  tertiary: '#3c6600',
+  surfaceLowest: '#ffffff',
+  surfaceLow: '#f0f1f1',
+  tertiaryContainer: '#c1fd7c',
+  onTertiaryContainer: '#396100',
+  secondaryContainer: '#ffc791',
+  onSecondaryContainer: '#6a3c00',
+  primaryContainer: '#91f78e',
+  onPrimaryContainer: '#005e17',
+  outlineVariant: '#acadad',
+  error: '#b02500',
+};
+
+const CATEGORY_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  'Protein': 'fish',
+  'Fats': 'leaf',
+  'Greens': 'leaf-outline',
+  'Dairy': 'wine',
+  'Carbs': 'pizza',
+  'Acidity': 'hardware-chip',
+  'Other': 'restaurant',
 };
 
 export default function FridgeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [items, setItems] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState('');
-  const [category, setCategory] = useState('Other');
-  const [quantity, setQuantity] = useState('1');
-  const [unit, setUnit] = useState('pieces');
-  const [expiryDate, setExpiryDate] = useState('');
   const [adding, setAdding] = useState(false);
 
   const loadItems = useCallback(async () => {
     try {
       const data = await api.getFridge();
-      const sorted = (data.ingredients || []).sort((a: any, b: any) => (STATUS_ORDER[a.expiry_status] ?? 3) - (STATUS_ORDER[b.expiry_status] ?? 3));
-      setItems(sorted);
+      setItems(data.ingredients || []);
     } catch {}
   }, []);
 
@@ -41,11 +58,22 @@ export default function FridgeScreen() {
     if (!name.trim()) return;
     setAdding(true);
     try {
-      await api.addIngredients([{ name: name.trim(), category, quantity: parseFloat(quantity) || 1, unit, expiry_date: expiryDate || undefined }]);
-      setShowAdd(false);
-      setName(''); setQuantity('1'); setExpiryDate('');
+      await api.addIngredients([{ name: name.trim(), category: 'Other', quantity: 1, unit: 'pieces' }]);
+      setName('');
       await loadItems();
     } catch {} finally { setAdding(false); }
+  };
+
+  const handleClearAll = () => {
+    Alert.alert('Clear Fridge', 'Remove all items?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Clear', style: 'destructive', onPress: async () => { 
+          // Assuming api has clear or sequential deletes
+          await Promise.all(items.map(i => api.deleteFridgeItem(i.item_id))); 
+          loadItems(); 
+        } 
+      },
+    ]);
   };
 
   const handleDelete = (itemId: string, itemName: string) => {
@@ -56,30 +84,93 @@ export default function FridgeScreen() {
   };
 
   const renderItem = ({ item }: { item: any }) => {
-    const sc = STATUS_COLORS[item.expiry_status] || STATUS_COLORS.fresh;
+    const iconName = CATEGORY_ICONS[item.category] || 'restaurant';
     return (
       <View testID={`fridge-item-${item.item_id}`} style={styles.itemCard}>
-        <View style={[styles.statusDot, { backgroundColor: sc.bg }]}>
-          <Ionicons name={sc.icon as any} size={18} color={sc.text} />
+        <View style={styles.itemIconBox}>
+          <Ionicons name={iconName as any} size={20} color={C.tertiary} />
         </View>
         <View style={styles.itemInfo}>
           <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemMeta}>{item.quantity} {item.unit} · {item.category}</Text>
-          {item.expiry_date && <Text style={[styles.itemExpiry, { color: sc.text }]}>Exp: {item.expiry_date}</Text>}
+          <Text style={styles.itemCategory}>{item.category || 'Other'}</Text>
         </View>
         <TouchableOpacity testID={`fridge-delete-${item.item_id}`} onPress={() => handleDelete(item.item_id, item.name)} style={styles.deleteBtn}>
-          <Ionicons name="trash-outline" size={20} color={Colors.critical} />
+          <Ionicons name="close" size={20} color={C.outlineVariant} />
         </TouchableOpacity>
       </View>
     );
   };
 
+  const headerComponent = () => (
+    <View style={styles.contentPad}>
+      <View style={styles.heroSection}>
+        <Text style={styles.heroTitle}>My Digital Fridge</Text>
+        <Text style={styles.heroSub}>Catalog your ingredients. Let AI curate your next gourmet masterpiece based on what's available.</Text>
+      </View>
+
+      <View style={styles.addSection}>
+        <Text style={styles.addLabel}>NEW INGREDIENT</Text>
+        <View style={styles.addRow}>
+          <View style={styles.inputWrapper}>
+            <TextInput 
+              testID="fridge-name-input"
+              style={styles.input} 
+              placeholder="e.g., Organic Kale..." 
+              placeholderTextColor="rgba(172,173,173,0.5)"
+              value={name}
+              onChangeText={setName}
+            />
+            <Ionicons name="restaurant" size={20} color={C.primary} style={styles.inputIcon} />
+          </View>
+          <TouchableOpacity testID="fridge-add-btn" style={styles.addBtn} onPress={handleAdd} disabled={adding}>
+            <Text style={styles.addBtnText}>{adding ? '...' : 'ADD'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.bentoLeft}>
+        <View style={styles.statusBox}>
+          <View style={styles.statusHeader}>
+            <Ionicons name="cube" size={28} color={C.primary} />
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusBadgeText}>{items.length} ITEMS</Text>
+            </View>
+          </View>
+          <Text style={styles.statusTitle}>Fridge Status</Text>
+          <Text style={styles.statusSub}>Your current inventory is sufficient for multiple potential recipes.</Text>
+        </View>
+      </View>
+
+      <View style={styles.listHeader}>
+        <Text style={styles.listTitle}>Active Inventory</Text>
+        {items.length > 0 && (
+          <TouchableOpacity onPress={handleClearAll}>
+            <Text style={styles.clearBtnText}>CLEAR ALL</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+
+  const footerComponent = () => (
+    <View style={styles.contentPad}>
+        <View style={styles.missingBox}>
+            <Ionicons name="sparkles" size={36} color={C.tertiary} style={{ marginBottom: 12 }} />
+            <Text style={styles.missingTitle}>Missing an essential?</Text>
+            <Text style={styles.missingSub}>Add your staples now to see even more refined recipe suggestions.</Text>
+        </View>
+    </View>
+  );
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <View style={styles.header}>
-        <Text style={styles.title}>My Fridge</Text>
-        <TouchableOpacity testID="fridge-add-btn" style={styles.addBtn} onPress={() => setShowAdd(true)}>
-          <Ionicons name="add" size={24} color={Colors.textInverse} />
+      <View style={styles.appBar}>
+        <TouchableOpacity style={styles.iconBtn}>
+          <Ionicons name="menu" size={24} color={C.primary} />
+        </TouchableOpacity>
+        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <TouchableOpacity onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBorder}>
+          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBMn-7UTbtA9AV_trb3iqPgg9s8LUPc-QALMijIWZveNhkriknrphL6eSw7S7OWkBmmNSZ8WCe1B66r2K3coBmKn8fGaKCQe9EewwryLjcPMc2tOMm24uWA4ADTtnyR9Olm8JumcjjyZ4FBFrow0wHKDLefDuEeqzK5PGGv-RtzhDWRfyYNQZ_HWd0FRQdZ2Vbo1X7Z2b6gOkP1EBcJqyBsx1SbR5pDWR2S38Q_ruuimqRsYJgFjC5Rhszc7_P9rqO8uRvkdxLlJEXU' }} style={styles.avatar} />
         </TouchableOpacity>
       </View>
 
@@ -87,95 +178,84 @@ export default function FridgeScreen() {
         data={items}
         keyExtractor={(item) => item.item_id}
         renderItem={renderItem}
-        contentContainerStyle={styles.list}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.orange} />}
-        ListEmptyComponent={
-          <View style={styles.empty}>
-            <Ionicons name="basket-outline" size={64} color={Colors.expired} />
-            <Text style={styles.emptyTitle}>Fridge is empty</Text>
-            <Text style={styles.emptyText}>Tap + to add your ingredients</Text>
-          </View>
-        }
+        ListHeaderComponent={headerComponent}
+        ListFooterComponent={footerComponent}
+        contentContainerStyle={styles.listContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.primary} />}
       />
 
-      <Modal visible={showAdd} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { paddingBottom: insets.bottom + Spacing.lg }]}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Add Ingredient</Text>
-              <TouchableOpacity testID="fridge-modal-close" onPress={() => setShowAdd(false)}>
-                <Ionicons name="close" size={28} color={Colors.textPrimary} />
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.label}>Name *</Text>
-            <TextInput testID="fridge-name-input" style={styles.input} placeholder="e.g. Tomatoes" placeholderTextColor={Colors.expired} value={name} onChangeText={setName} />
-
-            <Text style={styles.label}>Category</Text>
-            <FlatList
-              data={CATEGORIES}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(c) => c}
-              renderItem={({ item: c }) => (
-                <TouchableOpacity testID={`fridge-cat-${c}`} style={[styles.chip, category === c && styles.chipActive]} onPress={() => setCategory(c)}>
-                  <Text style={[styles.chipText, category === c && styles.chipTextActive]}>{c}</Text>
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-            />
-
-            <View style={styles.row}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>Quantity</Text>
-                <TextInput testID="fridge-qty-input" style={styles.input} value={quantity} onChangeText={setQuantity} keyboardType="numeric" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>Unit</Text>
-                <TextInput testID="fridge-unit-input" style={styles.input} value={unit} onChangeText={setUnit} placeholder="pieces" placeholderTextColor={Colors.expired} />
-              </View>
-            </View>
-
-            <Text style={styles.label}>Expiry Date (YYYY-MM-DD)</Text>
-            <TextInput testID="fridge-expiry-input" style={styles.input} placeholder="2026-04-15" placeholderTextColor={Colors.expired} value={expiryDate} onChangeText={setExpiryDate} />
-
-            <TouchableOpacity testID="fridge-submit-btn" style={[styles.submitBtn, adding && { opacity: 0.7 }]} onPress={handleAdd} disabled={adding}>
-              <Text style={styles.submitText}>{adding ? 'Adding...' : 'Add to Fridge'}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <View style={styles.fabWrapper}>
+        <TouchableOpacity style={styles.fab} onPress={() => router.push('/(tabs)/generate')}>
+          <Text style={styles.fabText}>GENERATE RECIPES</Text>
+          <Ionicons name="chevron-forward" size={18} color={C.onPrimary} style={{fontWeight:'bold'}} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  title: { fontSize: 28, fontWeight: '900', color: Colors.textPrimary },
-  addBtn: { backgroundColor: Colors.orange, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  list: { paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xxl },
-  itemCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.card, borderRadius: Radius.xl, padding: Spacing.md, marginBottom: Spacing.sm, borderWidth: 1, borderColor: Colors.borderSubtle },
-  statusDot: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  itemInfo: { flex: 1, marginLeft: Spacing.md },
-  itemName: { fontSize: 16, fontWeight: '700', color: Colors.textPrimary },
-  itemMeta: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  itemExpiry: { fontSize: 12, fontWeight: '600', marginTop: 2 },
+  container: { flex: 1, backgroundColor: C.surface },
+  appBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 24, paddingVertical: 16, backgroundColor: C.surface,
+    borderBottomWidth: 1, borderBottomColor: C.surfaceLow,
+  },
+  iconBtn: { padding: 4 },
+  appBarTitle: { fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', color: C.primary },
+  avatarBorder: {
+    width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(0,107,27,0.2)', overflow: 'hidden',
+  },
+  avatar: { width: '100%', height: '100%' },
+  listContent: { paddingBottom: 160 },
+  contentPad: { paddingHorizontal: 24 },
+  heroSection: { marginTop: 24, marginBottom: 40 },
+  heroTitle: { fontSize: 30, fontWeight: '900', color: C.onSurface, letterSpacing: -0.5, marginBottom: 8 },
+  heroSub: { fontSize: 16, color: C.onSurfaceVariant, fontWeight: '500', lineHeight: 24, maxWidth: '90%' },
+  addSection: { backgroundColor: C.surfaceLow, borderRadius: 24, padding: 24, marginBottom: 32 },
+  addLabel: { fontSize: 14, fontWeight: 'bold', color: C.onSurfaceVariant, letterSpacing: 0.5, marginBottom: 12 },
+  addRow: { flexDirection: 'row', gap: 12 },
+  inputWrapper: { flex: 1, position: 'relative', justifyContent: 'center' },
+  input: {
+    backgroundColor: C.surfaceLowest, borderRadius: 12, paddingVertical: 16, paddingLeft: 20, paddingRight: 48,
+    fontSize: 16, color: C.onSurface,
+  },
+  inputIcon: { position: 'absolute', right: 16, opacity: 0.6 },
+  addBtn: { backgroundColor: C.secondaryContainer, paddingHorizontal: 32, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  addBtnText: { color: C.onSecondaryContainer, fontWeight: 'bold', fontSize: 16 },
+  bentoLeft: { marginBottom: 24 },
+  statusBox: {
+    backgroundColor: 'rgba(0,107,27,0.05)', borderRadius: 24, padding: 24, borderWidth: 1, borderColor: 'rgba(0,107,27,0.1)'
+  },
+  statusHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  statusBadge: { backgroundColor: C.primaryContainer, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 16 },
+  statusBadgeText: { color: C.onPrimaryContainer, fontSize: 12, fontWeight: 'bold' },
+  statusTitle: { fontSize: 18, fontWeight: 'bold', color: C.onSurface, marginBottom: 4 },
+  statusSub: { fontSize: 14, color: C.onSurfaceVariant },
+  listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16 },
+  listTitle: { fontSize: 24, fontWeight: '900', color: C.onSurface, letterSpacing: -0.5 },
+  clearBtnText: { color: C.primary, fontSize: 14, fontWeight: 'bold', textDecorationLine: 'underline' },
+  itemCard: {
+    backgroundColor: C.surfaceLowest, flexDirection: 'row', alignItems: 'center',
+    padding: 12, paddingLeft: 16, borderRadius: 12, marginBottom: 12, marginHorizontal: 24,
+    shadowColor: C.onSurface, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.04, shadowRadius: 12, elevation: 2,
+  },
+  itemIconBox: { width: 40, height: 40, borderRadius: 8, backgroundColor: C.surfaceLow, alignItems: 'center', justifyContent: 'center' },
+  itemInfo: { flex: 1, marginLeft: 16 },
+  itemName: { fontSize: 16, fontWeight: '800', color: C.onSurface },
+  itemCategory: { fontSize: 10, uppercase: 'true', fontWeight: 'bold', letterSpacing: 1, color: C.secondary, marginTop: 2 },
   deleteBtn: { padding: 8 },
-  empty: { alignItems: 'center', paddingTop: 80 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: Colors.textPrimary, marginTop: Spacing.md },
-  emptyText: { fontSize: 14, color: Colors.textSecondary, marginTop: Spacing.xs },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: Colors.card, borderTopLeftRadius: Radius.xxl, borderTopRightRadius: Radius.xxl, paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, maxHeight: '85%' },
-  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
-  modalTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary },
-  label: { fontSize: 13, fontWeight: '600', color: Colors.textSecondary, marginBottom: Spacing.xs, marginTop: Spacing.sm },
-  input: { backgroundColor: Colors.inputBg, borderWidth: 1, borderColor: Colors.borderSubtle, borderRadius: Radius.md, paddingHorizontal: 16, paddingVertical: 14, fontSize: 16, color: Colors.textPrimary, marginBottom: Spacing.xs },
-  row: { flexDirection: 'row', gap: Spacing.md },
-  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full, backgroundColor: Colors.inputBg, borderWidth: 1, borderColor: Colors.borderSubtle },
-  chipActive: { backgroundColor: Colors.orange, borderColor: Colors.orange },
-  chipText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '600' },
-  chipTextActive: { color: Colors.textInverse },
-  submitBtn: { backgroundColor: Colors.orange, borderRadius: Radius.full, paddingVertical: 16, alignItems: 'center', marginTop: Spacing.lg },
-  submitText: { color: Colors.textInverse, fontSize: 17, fontWeight: '700' },
+  missingBox: {
+    marginTop: 32, backgroundColor: 'rgba(193,253,124,0.2)', borderRadius: 24, padding: 32,
+    alignItems: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: 'rgba(60,102,0,0.2)'
+  },
+  missingTitle: { fontSize: 18, fontWeight: 'bold', color: C.onSurface, textAlign: 'center' },
+  missingSub: { fontSize: 14, color: C.onSurfaceVariant, textAlign: 'center', marginTop: 8, maxWidth: 250 },
+  fabWrapper: { position: 'absolute', bottom: 100, left: 0, right: 0, alignItems: 'flex-end', paddingHorizontal: 24 },
+  fab: {
+    backgroundColor: C.primary, flexDirection: 'row', alignItems: 'center', gap: 12,
+    paddingHorizontal: 32, paddingVertical: 20, borderRadius: 40,
+    shadowColor: C.primary, shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.3, shadowRadius: 50, elevation: 8,
+  },
+  fabText: { fontSize: 18, fontWeight: '900', color: C.onPrimary, letterSpacing: 0.5 },
 });

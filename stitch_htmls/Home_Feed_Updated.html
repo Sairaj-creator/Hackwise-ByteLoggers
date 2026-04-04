@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Culinary Editorial - Home Feed</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,700;0,800;1,700&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f6f6f6",
+                        "error": "#b02500",
+                        "error-dim": "#b92902",
+                        "surface-tint": "#006b1b",
+                        "primary": "#006b1b",
+                        "on-tertiary-fixed-variant": "#406c00",
+                        "inverse-primary": "#91f78e",
+                        "primary-fixed": "#91f78e",
+                        "surface-container": "#e7e8e8",
+                        "secondary-fixed": "#ffc791",
+                        "outline-variant": "#acadad",
+                        "surface": "#f6f6f6",
+                        "on-tertiary-fixed": "#2c4d00",
+                        "on-error-container": "#520c00",
+                        "surface-dim": "#d3d5d5",
+                        "tertiary": "#3c6600",
+                        "on-tertiary": "#d9ffab",
+                        "on-secondary-fixed-variant": "#774400",
+                        "secondary-container": "#ffc791",
+                        "on-secondary-container": "#6a3c00",
+                        "on-primary": "#d1ffc8",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-container": "#91f78e",
+                        "on-primary-fixed-variant": "#00691a",
+                        "tertiary-fixed": "#c1fd7c",
+                        "on-primary-container": "#005e17",
+                        "inverse-on-surface": "#9c9d9d",
+                        "outline": "#767777",
+                        "surface-container-high": "#e1e3e3",
+                        "on-tertiary-container": "#396100",
+                        "surface-container-highest": "#dbdddd",
+                        "on-surface": "#2d2f2f",
+                        "secondary-fixed-dim": "#ffb467",
+                        "primary-dim": "#005d16",
+                        "primary-fixed-dim": "#83e881",
+                        "tertiary-fixed-dim": "#b3ee6f",
+                        "on-surface-variant": "#5a5c5c",
+                        "on-error": "#ffefec",
+                        "background": "#f6f6f6",
+                        "secondary-dim": "#764400",
+                        "surface-variant": "#dbdddd",
+                        "on-secondary-fixed": "#4f2c00",
+                        "secondary": "#874e00",
+                        "on-primary-fixed": "#00480f",
+                        "on-secondary": "#fff0e5",
+                        "inverse-surface": "#0c0f0f",
+                        "surface-container-low": "#f0f1f1",
+                        "error-container": "#f95630",
+                        "tertiary-container": "#c1fd7c",
+                        "tertiary-dim": "#345900",
+                        "on-background": "#2d2f2f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Be Vietnam Pro"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-[#f6f6f6] dark:bg-zinc-900 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-green-800 dark:text-green-400 hover:opacity-80 transition-opacity" data-icon="menu">menu</span>
+</div>
+<h1 class="font-plus-jakarta text-2xl font-bold tracking-tight text-green-800 dark:text-green-400 font-plus-jakarta font-bold italic">The Culinary Editorial</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container hover:opacity-80 transition-opacity">
+<img alt="Profile" data-alt="close-up portrait of a smiling person with warm lighting and a soft blurred background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0Nec5iT3xElO0fPegZ3Dve3Zdw37EGdjVzwrpaYx1_xsIIwE8Y7pTUtz9yFbe18Ak-BpPCsB556uwM2LY_HXvj9PvnrQK6z2kCE8rSN8KQKCz0K6fqxDBAQ5wDD_LNdIF6NUkHzNacyd4mqL6AfV5Z9A16eW8BiuGEOGm_pVMulebrP_5B4nyVYkf_6VeyOYxjAWgHkPsW5h7wlpu5wdMSlUlEE7xAQ8Yk30zsiQ8dkN89Lp46KeYjdXCNSTprQOTkqybeLPgNZwm"/>
+</div>
+</header>
+<main class="px-6 py-8 max-w-4xl mx-auto space-y-12">
+<!-- Welcome Section -->
+<section class="space-y-2">
+<div class="flex items-center gap-2 text-tertiary font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+<span class="text-sm tracking-wide font-label uppercase">Greenwich Village, NY</span>
+</div>
+<h2 class="text-4xl font-extrabold tracking-tight text-on-surface leading-tight">Verdant AI Kitchen</h2>
+<p class="text-on-surface-variant max-w-md text-lg">Curated flavors and intelligent pairings, tailored to your local seasonal harvest.</p>
+</section>
+<!-- Featured Section: Trending in your Area -->
+<section class="relative group">
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-secondary font-bold text-sm tracking-widest uppercase">Editor's Choice</span>
+<h3 class="text-2xl font-bold">Trending in your Area</h3>
+</div>
+</div>
+<!-- Hero Card -->
+<div class="relative bg-surface-container-lowest rounded-[1.5rem] overflow-hidden shadow-[0_12px_32px_rgba(45,47,47,0.06)] flex flex-col md:flex-row">
+<div class="md:w-3/5 h-80 md:h-auto relative overflow-hidden">
+<img alt="Featured Dish" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="overhead view of a vibrant spring vegetable risotto with fresh herbs and lemon zest on a ceramic plate, bright natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCq5HQe6e7lUYS7_n3BPTzRve3HxL_Ri7_baBsRvtqQ_07tlNtqvJdYCTB57yAyl0jvSjFSQaX_WCXk0FmrRUaZZrIPvfSEAhc8Bmt1M8V27rdIm8RucovtefdrMCV1RzOq7gnwDqhATklKiG40t_XKho0OPt4g2UIrjxzj-5c1lgrSW0JctDJYNaMWunZLrxN861EklnVTERYMwnqgYyCroAdxaRiBf-4YZyFqusD0KFZe_e3tFlx0HIhjpU1ATzl1RihRnoV-8L6O"/>
+<div class="absolute top-4 left-4">
+<span class="bg-white/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="bolt">bolt</span> AI MATCH 98%
+                        </span>
+</div>
+</div>
+<div class="md:w-2/5 p-8 flex flex-col justify-center space-y-4">
+<h4 class="text-2xl font-bold leading-tight">Wild Ramp &amp; Asparagus Risotto</h4>
+<p class="text-on-surface-variant text-sm leading-relaxed">A celebration of local spring foragers. Earthy ramps meet crisp garden asparagus in a velvety carnaroli base.</p>
+<div class="flex flex-wrap gap-4 py-2 border-y border-outline-variant/20">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="schedule">schedule</span>
+<span class="text-xs font-semibold">35 MIN</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-sm text-secondary" data-icon="local_fire_department">local_fire_department</span>
+<span class="text-xs font-semibold">420 KCAL</span>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold tracking-wide hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                        View Recipe
+                        <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Bento Feed Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Card 1 -->
+<div class="bg-surface-container-low rounded-[1.5rem] p-6 flex flex-col space-y-4">
+<div class="aspect-square w-full rounded-xl overflow-hidden">
+<img alt="Recipe" class="w-full h-full object-cover" data-alt="close-up of a colorful buddha bowl with quinoa, roasted sweet potatoes, kale, and a drizzle of tahini dressing" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk4wREk30VPuLMzR0gbp7li6w4LWeGHdWRX7REwCzRq9YG-Bx9tPIWjZaJajDDQ_i9uKeSPqIJ8ZEvnYhISBfudkffY_jjfQegzPKXWbRzBWg_g-3IE80pAY5DocCEbF4HV4PKg7tTQaFRpUzmFybpmfg4Z-dVqB03YAkBLmPK2Z6w5ryzWVwIKVZ1zVVick9-oPXGb2ZZwsoofLiDFUt4Fc1KF1HaebEZVdzFTi2vJYTIzFZtF0wYYOxks3aCux3WX-i2vgGQM70b"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="text-lg font-bold">Harissa Glazed Roots</h4>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="favorite">favorite</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium">Spiced carrots and parsnips with local clover honey.</p>
+<div class="flex gap-2 pt-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded text-[10px] font-bold">VEGAN</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">LOCAL</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-low rounded-[1.5rem] p-6 flex flex-col space-y-4">
+<div class="aspect-square w-full rounded-xl overflow-hidden">
+<img alt="Recipe" class="w-full h-full object-cover" data-alt="crispy artisan sourdough flatbread topped with fresh basil, buffalo mozzarella, and vine-ripened cherry tomatoes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWDYj9s1DT77JTKaNdWZAodx7O4ZnBaJqvGgk2bvTq2JeYhIPqdFIcFTjxnjB61FJZ9mvx3sBAHJhWqJNYXuFaElT2a4RjXCBbTZ4JjYiddnBI6tWA0WSKnrVK3YVummDRcQMGWFWhpGgOjck6ZG7C0_QWYTrIC0C2u8ft1z_aIqiyLEnmafChbOae8ix3W_1PmUGwgotOruyxPnVDRoNmZeCoz3bp-ldN5F-4P9mFYU5EMHeqymei5aQIpRv-ziIxYQH2CoADTulG"/>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-start">
+<h4 class="text-lg font-bold">Artisan Basil Flatbread</h4>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="favorite">favorite</span>
+</div>
+<p class="text-on-surface-variant text-xs font-medium">Stone-baked dough with herbs from the Union Square Market.</p>
+<div class="flex gap-2 pt-2">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold">SEASONAL</span>
+<span class="bg-primary-container text-on-primary-container px-2 py-1 rounded text-[10px] font-bold">15 MIN</span>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Assistant Banner -->
+<section class="bg-primary text-on-primary rounded-[1.5rem] p-8 flex items-center justify-between overflow-hidden relative">
+<div class="z-10 space-y-2">
+<h3 class="text-xl font-bold">What's in your fridge?</h3>
+<p class="text-on-primary/80 text-sm max-w-[240px]">Snap a photo and let our AI curate a recipe from your available ingredients.</p>
+<button class="mt-4 bg-on-primary text-primary px-6 py-2 rounded-full font-bold text-sm hover:scale-105 transition-transform">Start Scan</button>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-20">
+<span class="material-symbols-outlined text-[160px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl shadow-[0_-12px_32px_rgba(45,47,47,0.06)] rounded-t-[1.5rem]">
+<a class="flex flex-col items-center justify-center bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-200 rounded-[1.5rem] px-5 py-2 tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-be-vietnam text-[10px] font-medium tracking-wide">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="kitchen">kitchen</span>
+<span class="font-be-vietnam text-[10px] font-medium tracking-wide">Fridge</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-be-vietnam text-[10px] font-medium tracking-wide">Scanner</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-be-vietnam text-[10px] font-medium tracking-wide">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-be-vietnam text-[10px] font-medium tracking-wide">Settings</span>
+</a>
+</nav>
+</body></html>
