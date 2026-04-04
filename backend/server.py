@@ -132,17 +132,35 @@ def get_expiry_status(expiry_date_str: Optional[str]) -> str:
 
 # ─── Recipe JSON Parser ─────────────────────────────────────────────
 def parse_recipe_json(text: str) -> dict:
+    # Try direct parse
     try:
-        return json.loads(text)
+        return json.loads(text.strip())
     except json.JSONDecodeError:
         pass
-    m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', text, re.DOTALL)
+    # Try extracting from code blocks
+    m = re.search(r'```(?:json)?\s*\n?(.*?)\n?\s*```', text, re.DOTALL)
     if m:
         try:
-            return json.loads(m.group(1))
+            return json.loads(m.group(1).strip())
         except json.JSONDecodeError:
             pass
-    m = re.search(r'\{.*\}', text, re.DOTALL)
+    # Try finding outermost JSON object
+    depth = 0
+    start = -1
+    for i, ch in enumerate(text):
+        if ch == '{':
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0 and start >= 0:
+                try:
+                    return json.loads(text[start:i+1])
+                except json.JSONDecodeError:
+                    start = -1
+    # Last resort: find any JSON-like block
+    m = re.search(r'\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}', text, re.DOTALL)
     if m:
         try:
             return json.loads(m.group(0))
