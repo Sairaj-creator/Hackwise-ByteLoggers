@@ -1,0 +1,150 @@
+{
+  "theme_and_archetype": {
+    "domain": "Food & Cooking",
+    "theme": "Light",
+    "archetype": "Archetype 1: Organic & Earthy",
+    "reasoning": "Patients/Users need warmth, calm, and trust. A dark UI feels clinical and unappetizing. We are using warm off-whites (stone) to replicate the feel of a physical kitchen counter, allowing the bright colors of the food and the traffic-light system of the Food Waste Tracker (Green, Amber, Red) to stand out clearly."
+  },
+  "colors": {
+    "backgrounds": {
+      "app_bg": "#FAFAF9",
+      "card_bg": "#FFFFFF",
+      "cooking_mode_bg": "#1C1917"
+    },
+    "text": {
+      "primary": "#1C1917",
+      "secondary": "#57534E",
+      "inverse": "#FFFFFF",
+      "cooking_mode_primary": "#FAFAF9"
+    },
+    "brand_and_cta": {
+      "primary_orange": "#EA580C",
+      "primary_orange_pressed": "#C2410C",
+      "secondary_amber": "#D97706"
+    },
+    "status_indicators": {
+      "fresh": "#16A34A",
+      "fresh_bg": "#DCFCE7",
+      "warning": "#D97706",
+      "warning_bg": "#FEF3C7",
+      "critical": "#DC2626",
+      "critical_bg": "#FEE2E2",
+      "expired": "#78716C",
+      "expired_bg": "#E7E5E4"
+    },
+    "borders": {
+      "subtle": "#E7E5E4",
+      "focus": "#EA580C"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "Outfit, sans-serif",
+      "body": "DM Sans, sans-serif"
+    },
+    "rules": {
+      "h1": "text-4xl tracking-tight font-black",
+      "h2": "text-3xl tracking-tight font-bold",
+      "h3": "text-xl tracking-tight font-semibold",
+      "body": "text-base leading-relaxed text-stone-600",
+      "overline": "text-xs tracking-[0.2em] uppercase font-bold text-stone-500",
+      "anti_default_rule": "Do not use Inter for headings. Keep weights extreme: Black (900) for big moments, Medium (500) for body."
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous Spacing. Use p-6 or p-8 inside cards. No cramped elements. Mobile-first thumb zones are critical.",
+    "container": "px-6 pb-8 pt-4",
+    "card_padding": "p-6",
+    "border_radius": {
+      "card": "rounded-3xl",
+      "button": "rounded-full",
+      "image": "rounded-2xl",
+      "tag": "rounded-full"
+    },
+    "shadows": {
+      "soft_ambient": "shadow-[0_8px_30px_rgba(0,0,0,0.04)]",
+      "none": "shadow-none"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-orange-600 text-white rounded-full py-4 px-8 font-semibold text-lg flex-row items-center justify-center active:bg-orange-700",
+      "secondary": "bg-stone-100 text-stone-800 rounded-full py-4 px-8 font-semibold text-lg flex-row items-center justify-center active:bg-stone-200",
+      "ghost": "bg-transparent text-stone-600 py-4 px-6 font-semibold flex-row items-center justify-center"
+    },
+    "cards": {
+      "base": "bg-white border border-stone-200 rounded-3xl p-6 shadow-sm mb-4",
+      "recipe_card": "bg-white border border-stone-200 rounded-3xl overflow-hidden mb-6",
+      "fridge_item": "flex-row items-center justify-between p-4 bg-white border border-stone-200 rounded-2xl mb-3"
+    },
+    "inputs": {
+      "text": "bg-stone-50 border border-stone-200 rounded-2xl px-5 py-4 text-base text-stone-800 focus:border-orange-600 focus:bg-white"
+    },
+    "tags": {
+      "base": "px-3 py-1.5 rounded-full flex-row items-center gap-1.5",
+      "fresh": "bg-green-100 text-green-700",
+      "warning": "bg-amber-100 text-amber-700",
+      "critical": "bg-red-100 text-red-700",
+      "expired": "bg-stone-200 text-stone-700"
+    }
+  },
+  "screens_and_patterns": {
+    "onboarding": {
+      "layout": "Full-screen background image with a dark gradient overlay at the bottom. Content (Title, Subtitle, CTA) is anchored to the bottom (safe area).",
+      "overlay": "bg-gradient-to-t from-black/80 via-black/40 to-transparent"
+    },
+    "home_dashboard": {
+      "layout": "Top section: Greeting + Quick AI Generate button (prominent). Middle section: Bento grid for Fridge Summary (e.g., '3 Expiring Soon' in a red-tinted card). Bottom section: Suggested Recipes horizontal scroll."
+    },
+    "fridge_management": {
+      "layout": "List view. Group items by expiry status (Critical first, Warning second, Fresh last). Use the empty_fridge_icon for zero-state."
+    },
+    "recipe_generation": {
+      "layout": "Step-by-step form or a single scrollable view. Use large selectable pills for ingredient inclusion. 'Generate' button should be sticky at the bottom."
+    },
+    "cooking_mode": {
+      "layout": "Immersive Dark Mode to save battery and reduce screen glare in the kitchen. Large typography. Swipeable horizontal PagerView for steps. Circular progress timer in the center.",
+      "colors": "bg-stone-900 text-stone-50"
+    }
+  },
+  "media_urls": {
+    "onboarding_bg": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/273815e5-780b-4e01-8072-0ebbf9ceebbd/images/9f3fc44ec4c71898d79a116a11fcd7f22a7bcda64696c0081eb5b5b7cb1953ce.png",
+      "description": "Warm amber and orange gradient background with subtle grain. Use for Onboarding screen full background.",
+      "category": "background"
+    },
+    "empty_fridge_icon": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/273815e5-780b-4e01-8072-0ebbf9ceebbd/images/abe780aa640d7e151116f6f06f348ef675230af4e63f5a026eeec7425e0dd76f.png",
+      "description": "3D minimalist icon of an empty open refrigerator. Use for Fridge empty state.",
+      "category": "icon"
+    },
+    "recipe_placeholder_1": {
+      "url": "https://images.unsplash.com/photo-1767441358044-14d9f8f5b53d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxkZWxpY2lvdXMlMjBwbGF0ZWQlMjBtZWFsJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Plated meal. Use as fallback image for generated recipes.",
+      "category": "recipe_image"
+    },
+    "recipe_placeholder_2": {
+      "url": "https://images.unsplash.com/photo-1759753930774-4ca761c06c9c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxkZWxpY2lvdXMlMjBwbGF0ZWQlMjBtZWFsJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Crab dish on white plate. Use as fallback image for generated recipes.",
+      "category": "recipe_image"
+    },
+    "ingredients_fresh": {
+      "url": "https://images.unsplash.com/photo-1573246123716-6b1782bfc499?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMHZlZ2V0YWJsZXMlMjBjb29raW5nJTIwZmxhdGxheXxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85",
+      "description": "Fresh vegetables. Use for category headers or AI generation banner backgrounds.",
+      "category": "banner"
+    }
+  },
+  "icons": {
+    "library": "lucide-react-native",
+    "rules": "Use Lucide icons with 24px default size, stroke width 2. Match icon color to text context."
+  },
+  "instructions_to_main_agent": {
+    "testing": "All interactive and key informational elements MUST include a 'data-testid' or 'testID' (for React Native) attribute in kebab-case. Example: testID='login-submit-button'.",
+    "react_native_rules": "This is a mobile app. Use View, Text, TouchableOpacity, ScrollView, FlatList. Map the provided Tailwind classes to NativeWind or StyleSheet. Avoid HTML tags (div, span, button).",
+    "safe_area": "Ensure all screens are wrapped in SafeAreaView to prevent overlap with notches.",
+    "keyboard_handling": "Wrap forms in KeyboardAvoidingView and ScrollView to ensure inputs remain accessible when keyboard is open.",
+    "navigation": "Use standard React Navigation patterns. Bottom Tab Navigator for main flows (Home, Fridge, Profile), Stack Navigator for flows like Recipe Detail and Cooking Mode.",
+    "images": "NEVER use placeholder services (e.g., via.placeholder.com). Use the URLs provided in 'media_urls' exclusively.",
+    "card_borders": "Do not use generic drop shadows for cards. Rely on the 1px subtle border (#E7E5E4) and rounded-3xl to separate content."
+  }
+}
