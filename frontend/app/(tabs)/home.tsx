@@ -4,8 +4,27 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/context/AuthContext';
 import { api } from '@/services/api';
-import { Colors, Spacing, Radius, PLACEHOLDER_IMAGES } from '@/constants/theme';
+import { PLACEHOLDER_IMAGES } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
+
+const C = {
+  surface: '#f6f6f6',
+  onSurface: '#2d2f2f',
+  onSurfaceVariant: '#5a5c5c',
+  primary: '#006b1b',
+  onPrimary: '#d1ffc8',
+  secondary: '#874e00',
+  tertiary: '#3c6600',
+  surfaceLowest: '#ffffff',
+  surfaceLow: '#f0f1f1',
+  tertiaryContainer: '#c1fd7c',
+  onTertiaryContainer: '#396100',
+  secondaryContainer: '#ffc791',
+  onSecondaryContainer: '#6a3c00',
+  primaryContainer: '#91f78e',
+  onPrimaryContainer: '#005e17',
+  outlineVariant: '#acadad',
+};
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -26,147 +45,224 @@ export default function HomeScreen() {
   useEffect(() => { loadData(); }, [loadData]);
 
   const onRefresh = async () => { setRefreshing(true); await loadData(); setRefreshing(false); };
-
-  const greeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
+  
+  const heroRecipe = recipes.length > 0 ? recipes[0] : null;
+  const recentRecipes = recipes.length > 1 ? recipes.slice(1, 5) : [];
 
   return (
-    <ScrollView
-      style={[styles.container, { paddingTop: insets.top }]}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.orange} />}
-    >
-      <View style={styles.greetingRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.greeting}>{greeting()},</Text>
-          <Text style={styles.userName}>{user?.name || 'Chef'}</Text>
-        </View>
-        <TouchableOpacity testID="home-profile-btn" onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBtn}>
-          <Ionicons name="person-circle" size={44} color={Colors.orange} />
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.iconBtn}>
+          <Ionicons name="menu" size={24} color={C.primary} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>The Culinary Editorial</Text>
+        <TouchableOpacity testID="home-profile-btn" onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBorder}>
+          <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0Nec5iT3xElO0fPegZ3Dve3Zdw37EGdjVzwrpaYx1_xsIIwE8Y7pTUtz9yFbe18Ak-BpPCsB556uwM2LY_HXvj9PvnrQK6z2kCE8rSN8KQKCz0K6fqxDBAQ5wDD_LNdIF6NUkHzNacyd4mqL6AfV5Z9A16eW8BiuGEOGm_pVMulebrP_5B4nyVYkf_6VeyOYxjAWgHkPsW5h7wlpu5wdMSlUlEE7xAQ8Yk30zsiQ8dkN89Lp46KeYjdXCNSTprQOTkqybeLPgNZwm' }} style={styles.avatar} />
         </TouchableOpacity>
       </View>
 
-      {/* Quick Generate CTA */}
-      <TouchableOpacity testID="home-generate-btn" style={styles.generateCard} onPress={() => router.push('/(tabs)/generate')} activeOpacity={0.85}>
-        <View style={styles.generateContent}>
-          <Ionicons name="sparkles" size={28} color={Colors.textInverse} />
-          <Text style={styles.generateTitle}>Generate a Recipe</Text>
-          <Text style={styles.generateSub}>Let AI create something delicious from your ingredients</Text>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.primary} />}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Welcome Section */}
+        <View style={styles.welcomeSection}>
+          <View style={styles.locationRow}>
+            <Ionicons name="location" size={14} color={C.tertiary} />
+            <Text style={styles.locationText}>KITCHEN INVENTORY</Text>
+          </View>
+          <Text style={styles.welcomeTitle}>{user?.name ? `${user.name}'s\nVerdant AI Kitchen` : 'Verdant AI Kitchen'}</Text>
+          <Text style={styles.welcomeSub}>Curated flavors and intelligent pairings, tailored to your available ingredients.</Text>
         </View>
-        <Ionicons name="arrow-forward-circle" size={36} color="rgba(255,255,255,0.8)" />
-      </TouchableOpacity>
 
-      {/* Fridge Summary */}
-      <View style={styles.statsRow}>
-        <TouchableOpacity testID="home-fridge-card" style={styles.statCard} onPress={() => router.push('/(tabs)/fridge')}>
-          <Ionicons name="basket" size={24} color={Colors.fresh} />
-          <Text style={styles.statNumber}>{fridgeData?.total || 0}</Text>
-          <Text style={styles.statLabel}>In Fridge</Text>
-        </TouchableOpacity>
-        <TouchableOpacity testID="home-expiring-card" style={[styles.statCard, fridgeData?.expiring_soon_count > 0 && styles.statCardWarning]} onPress={() => router.push('/(tabs)/fridge')}>
-          <Ionicons name="alert-circle" size={24} color={fridgeData?.expiring_soon_count > 0 ? Colors.warning : Colors.expired} />
-          <Text style={styles.statNumber}>{fridgeData?.expiring_soon_count || 0}</Text>
-          <Text style={styles.statLabel}>Expiring Soon</Text>
-        </TouchableOpacity>
-        <TouchableOpacity testID="home-recipes-card" style={styles.statCard} onPress={() => router.push('/(tabs)/favorites')}>
-          <Ionicons name="restaurant" size={24} color={Colors.orange} />
-          <Text style={styles.statNumber}>{recipes.length}</Text>
-          <Text style={styles.statLabel}>Recipes</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Featured Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.editorChoice}>EDITOR'S CHOICE</Text>
+          <Text style={styles.sectionTitle}>Trending in your Kitchen</Text>
+        </View>
 
-      {/* Recent Recipes */}
-      {recipes.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Recipes</Text>
-          {recipes.slice(0, 5).map((recipe, i) => (
-            <TouchableOpacity
-              key={recipe.recipe_id}
-              testID={`home-recipe-${i}`}
-              style={styles.recipeItem}
-              onPress={() => router.push(`/recipe/${recipe.recipe_id}`)}
-            >
-              <Image source={{ uri: PLACEHOLDER_IMAGES[i % PLACEHOLDER_IMAGES.length] }} style={styles.recipeThumb} />
-              <View style={styles.recipeInfo}>
-                <Text style={styles.recipeName} numberOfLines={1}>{recipe.title}</Text>
-                <View style={styles.recipeMeta}>
-                  <Ionicons name="time-outline" size={14} color={Colors.textSecondary} />
-                  <Text style={styles.recipeMetaText}>{recipe.total_time_minutes || recipe.cook_time_minutes || '?'} min</Text>
-                  <Ionicons name="flame-outline" size={14} color={Colors.textSecondary} />
-                  <Text style={styles.recipeMetaText}>{recipe.difficulty || 'Easy'}</Text>
+        {heroRecipe ? (
+          <View style={styles.heroCard}>
+            <View style={styles.heroImageContainer}>
+               <Image source={{ uri: PLACEHOLDER_IMAGES[0 % PLACEHOLDER_IMAGES.length] }} style={styles.heroImage} />
+               <View style={styles.aiBadge}>
+                  <Ionicons name="flash" size={12} color={C.primary} />
+                  <Text style={styles.aiBadgeText}>AI MATCH 98%</Text>
+               </View>
+            </View>
+            <View style={styles.heroContent}>
+              <Text style={styles.heroTitle}>{heroRecipe.title}</Text>
+              <Text style={styles.heroSub} numberOfLines={2}>A celebration of your local ingredients crafted just for you.</Text>
+              <View style={styles.heroMetaRow}>
+                <View style={styles.metaBadge}>
+                  <Ionicons name="time-outline" size={14} color={C.secondary} />
+                  <Text style={styles.metaText}>{heroRecipe.total_time_minutes || 35} MIN</Text>
+                </View>
+                <View style={styles.metaBadge}>
+                  <Ionicons name="flame-outline" size={14} color={C.secondary} />
+                  <Text style={styles.metaText}>{heroRecipe.difficulty || 'Easy'}</Text>
                 </View>
               </View>
-              <Ionicons name="chevron-forward" size={20} color={Colors.expired} />
+              <TouchableOpacity style={styles.heroBtn} onPress={() => router.push(`/recipe/${heroRecipe.recipe_id}`)}>
+                <Text style={styles.heroBtnText}>View Recipe</Text>
+                <Ionicons name="arrow-forward" size={16} color={C.onPrimary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View style={[styles.heroCard, { padding: 24, alignItems: 'center' }]}>
+            <Ionicons name="restaurant-outline" size={48} color={C.outlineVariant} />
+            <Text style={[styles.heroTitle, {marginTop: 12}]}>No recipes yet</Text>
+            <Text style={[styles.heroSub, {textAlign: 'center', marginBottom: 12}]}>Add items to your fridge and let AI create amazing recipes for you!</Text>
+            <TouchableOpacity style={styles.heroBtn} onPress={() => router.push('/(tabs)/fridge')}>
+                <Text style={styles.heroBtnText}>Manage Fridge</Text>
             </TouchableOpacity>
-          ))}
-        </View>
-      )}
+          </View>
+        )}
 
-      {recipes.length === 0 && (
-        <View style={styles.emptySection}>
-          <Image source={{ uri: 'https://images.unsplash.com/photo-1573246123716-6b1782bfc499?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwzfHxmcmVzaCUyMHZlZ2V0YWJsZXMlMjBjb29raW5nJTIwZmxhdGxheXxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85' }} style={styles.emptyImage} />
-          <Text style={styles.emptyTitle}>No recipes yet</Text>
-          <Text style={styles.emptyText}>Add ingredients to your fridge and let AI create amazing recipes for you!</Text>
+        {/* Bento Feed Grid */}
+        {recentRecipes.length > 0 && (
+          <View style={styles.grid}>
+            {recentRecipes.map((recipe, i) => (
+              <TouchableOpacity key={recipe.recipe_id} style={styles.gridCard} onPress={() => router.push(`/recipe/${recipe.recipe_id}`)}>
+                <View style={styles.gridImageContainer}>
+                  <Image source={{ uri: PLACEHOLDER_IMAGES[(i+1) % PLACEHOLDER_IMAGES.length] }} style={styles.gridImage} />
+                </View>
+                <View style={styles.gridContent}>
+                  <View style={styles.gridRow}>
+                    <Text style={styles.gridTitle} numberOfLines={1}>{recipe.title}</Text>
+                    <Ionicons name="heart-outline" size={18} color={C.onSurfaceVariant} />
+                  </View>
+                  <Text style={styles.gridSub} numberOfLines={2}>Perfectly paired with your saved ingredients.</Text>
+                  <View style={styles.gridTags}>
+                    <View style={[styles.gridTag, { backgroundColor: C.secondaryContainer }]}>
+                      <Text style={[styles.gridTagText, { color: C.onSecondaryContainer }]}>{recipe.difficulty || 'EASY'}</Text>
+                    </View>
+                    <View style={[styles.gridTag, { backgroundColor: C.primaryContainer }]}>
+                      <Text style={[styles.gridTagText, { color: C.onPrimaryContainer }]}>{recipe.total_time_minutes || 20} MIN</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* AI Assistant Banner */}
+        <View style={styles.aiBanner}>
+          <View style={styles.aiBannerBg}>
+            <Ionicons name="sparkles" size={160} color="rgba(255,255,255,0.05)" style={styles.aiBannerIcon} />
+          </View>
+          <View style={styles.aiBannerContent}>
+            <Text style={styles.aiBannerTitle}>What's in your fridge?</Text>
+            <Text style={styles.aiBannerSub}>Snap a photo and let our AI curate a recipe from your available ingredients.</Text>
+            <TouchableOpacity style={styles.aiBannerBtn} onPress={() => router.push('/(tabs)/generate')}>
+              <Text style={styles.aiBannerBtnText}>Start Scan</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      )}
-    </ScrollView>
+
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
-  content: { paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xxl },
-  greetingRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.md, marginBottom: Spacing.lg },
-  greeting: { fontSize: 15, color: Colors.textSecondary, fontWeight: '500' },
-  userName: { fontSize: 26, fontWeight: '900', color: Colors.textPrimary, letterSpacing: -0.5 },
-  avatarBtn: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-  generateCard: {
-    backgroundColor: Colors.orange,
-    borderRadius: Radius.xxl,
-    padding: Spacing.lg,
+  container: { flex: 1, backgroundColor: C.surface },
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    backgroundColor: C.surface,
   },
-  generateContent: { flex: 1 },
-  generateTitle: { fontSize: 20, fontWeight: '800', color: Colors.textInverse, marginTop: Spacing.sm },
-  generateSub: { fontSize: 13, color: 'rgba(255,255,255,0.8)', marginTop: Spacing.xs },
-  statsRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.lg },
-  statCard: {
-    flex: 1,
-    backgroundColor: Colors.card,
-    borderRadius: Radius.xl,
-    padding: Spacing.md,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+  iconBtn: { padding: 4 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', fontStyle: 'italic', color: C.primary },
+  avatarBorder: {
+    width: 40, height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: C.primaryContainer,
+    overflow: 'hidden',
   },
-  statCardWarning: { borderColor: Colors.warning, backgroundColor: Colors.warningBg },
-  statNumber: { fontSize: 24, fontWeight: '900', color: Colors.textPrimary, marginTop: Spacing.xs },
-  statLabel: { fontSize: 11, color: Colors.textSecondary, fontWeight: '600', marginTop: 2 },
-  section: { marginBottom: Spacing.lg },
-  sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.textPrimary, marginBottom: Spacing.md },
-  recipeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: Radius.xl,
-    padding: Spacing.sm,
-    marginBottom: Spacing.sm,
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+  avatar: { width: '100%', height: '100%' },
+  content: { paddingHorizontal: 24, paddingBottom: 100 },
+  welcomeSection: { marginTop: 16, marginBottom: 32 },
+  locationRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 8 },
+  locationText: { fontSize: 12, fontWeight: '600', color: C.tertiary, letterSpacing: 0.5 },
+  welcomeTitle: { fontSize: 36, fontWeight: '900', color: C.onSurface, lineHeight: 42, marginBottom: 8 },
+  welcomeSub: { fontSize: 16, color: C.onSurfaceVariant, lineHeight: 24, maxWidth: '90%' },
+  sectionHeader: { marginBottom: 24 },
+  editorChoice: { fontSize: 12, fontWeight: '700', color: C.secondary, letterSpacing: 1.5, marginBottom: 4 },
+  sectionTitle: { fontSize: 24, fontWeight: 'bold', color: C.onSurface },
+  heroCard: {
+    backgroundColor: C.surfaceLowest,
+    borderRadius: 24,
+    overflow: 'hidden',
+    marginBottom: 32,
+    shadowColor: C.onSurface,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.06,
+    shadowRadius: 32,
+    elevation: 4,
   },
-  recipeThumb: { width: 56, height: 56, borderRadius: Radius.md },
-  recipeInfo: { flex: 1, marginLeft: Spacing.md },
-  recipeName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
-  recipeMeta: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  recipeMetaText: { fontSize: 12, color: Colors.textSecondary, marginRight: 8 },
-  emptySection: { alignItems: 'center', paddingVertical: Spacing.xl },
-  emptyImage: { width: 200, height: 140, borderRadius: Radius.xl, marginBottom: Spacing.md },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: Colors.textPrimary },
-  emptyText: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', marginTop: Spacing.xs, paddingHorizontal: Spacing.lg },
+  heroImageContainer: { height: 240, width: '100%', position: 'relative' },
+  heroImage: { width: '100%', height: '100%' },
+  aiBadge: {
+    position: 'absolute', top: 16, left: 16,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 10, paddingVertical: 6,
+    borderRadius: 16,
+  },
+  aiBadgeText: { fontSize: 10, fontWeight: '800', color: C.primary },
+  heroContent: { padding: 24, gap: 12 },
+  heroTitle: { fontSize: 22, fontWeight: 'bold', color: C.onSurface },
+  heroSub: { fontSize: 14, color: C.onSurfaceVariant, lineHeight: 20 },
+  heroMetaRow: { flexDirection: 'row', gap: 16, paddingVertical: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: 'rgba(172,173,173,0.2)' },
+  metaBadge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metaText: { fontSize: 12, fontWeight: '600', color: C.onSurface },
+  heroBtn: {
+    backgroundColor: C.primary,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    paddingVertical: 16, borderRadius: 12, marginTop: 8,
+  },
+  heroBtnText: { color: C.onPrimary, fontSize: 16, fontWeight: 'bold' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 32 },
+  gridCard: {
+    width: '48%',
+    backgroundColor: C.surfaceLow,
+    borderRadius: 24,
+    padding: 16,
+    marginBottom: 16,
+  },
+  gridImageContainer: { width: '100%', aspectRatio: 1, borderRadius: 12, overflow: 'hidden', marginBottom: 12 },
+  gridImage: { width: '100%', height: '100%' },
+  gridContent: { gap: 8 },
+  gridRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  gridTitle: { fontSize: 16, fontWeight: 'bold', color: C.onSurface, flex: 1, marginRight: 8 },
+  gridSub: { fontSize: 12, color: C.onSurfaceVariant, fontWeight: '500' },
+  gridTags: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 4 },
+  gridTag: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 4 },
+  gridTagText: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
+  aiBanner: {
+    backgroundColor: C.primary,
+    borderRadius: 24,
+    padding: 24,
+    overflow: 'hidden',
+    position: 'relative',
+    minHeight: 180,
+    justifyContent: 'center',
+    marginBottom: 40,
+  },
+  aiBannerBg: { position: 'absolute', right: -40, bottom: -40, zIndex: 0 },
+  aiBannerIcon: { opacity: 0.8 },
+  aiBannerContent: { zIndex: 1, alignItems: 'flex-start', maxWidth: '75%' },
+  aiBannerTitle: { fontSize: 20, fontWeight: 'bold', color: C.onPrimary, marginBottom: 8 },
+  aiBannerSub: { fontSize: 14, color: 'rgba(209,255,200,0.8)', lineHeight: 20, marginBottom: 16 },
+  aiBannerBtn: { backgroundColor: C.onPrimary, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20 },
+  aiBannerBtnText: { color: C.primary, fontSize: 14, fontWeight: 'bold' }
 });

@@ -95,4 +95,66 @@ export const api = {
 
   doneCooking: (recipeId: string) =>
     request(`/api/v1/recipes/${recipeId}/done-cooking`, { method: 'POST' }),
+
+  getNutrients: (recipeId: string) => request(`/api/v1/recipes/${recipeId}/nutrients`),
+
+  // Fridge — image scan (multipart upload, bypasses default JSON headers)
+  scanImage: async (imageUri: string): Promise<any> => {
+    const token = await getToken();
+    const formData = new FormData();
+    const filename = imageUri.split('/').pop() || 'photo.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+    formData.append('image', { uri: imageUri, name: filename, type } as any);
+
+    const headers: any = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE}/api/v1/fridge/scan`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Scan failed: ${res.status}`);
+    }
+    return res.json();
+  },
+
+  // Fridge — cart import
+  cartImport: (cartItems: string[], source: string = 'manual') =>
+    request('/api/v1/fridge/cart-import', { method: 'POST', body: JSON.stringify({ cart_items: cartItems, source }) }),
+
+  // Auth — update allergy profile
+  updateAllergies: (allergies: { allergen: string; severity: string }[]) =>
+    request('/api/v1/auth/profile/allergies', { method: 'PUT', body: JSON.stringify({ allergies }) }),
+
+  // Waste Tracker
+  getWasteDashboard: () => request('/api/v1/waste-tracker/dashboard'),
+
+  logWasteUsage: (data: { ingredient_id: string; action: string; quantity_used_grams: number; recipe_id?: string }) =>
+    request('/api/v1/waste-tracker/log-usage', { method: 'POST', body: JSON.stringify(data) }),
+
+  getWasteHistory: (period: string = 'monthly') => request(`/api/v1/waste-tracker/history?period=${period}`),
+
+  getSmartSuggestions: () => request('/api/v1/waste-tracker/smart-suggestions'),
+
+  // Meal Planner
+  generateMealPlan: (data: any) =>
+    request('/api/v1/meal-planner/generate', { method: 'POST', body: JSON.stringify(data) }),
+
+  getMealPlan: (planId: string) => request(`/api/v1/meal-planner/${planId}`),
+
+  swapMeal: (planId: string, day: number, meal: string) =>
+    request(`/api/v1/meal-planner/${planId}/swap`, { method: 'PUT', body: JSON.stringify({ day, meal }) }),
+
+  getShoppingList: (planId: string) => request(`/api/v1/meal-planner/${planId}/shopping-list`),
+
+  // Social
+  getSocialFeed: (page: number = 1) => request(`/api/v1/social/feed?page=${page}`),
+
+  toggleLike: (postId: string) =>
+    request(`/api/v1/social/posts/${postId}/like`, { method: 'POST' }),
 };

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Culinary Editorial - My Fridge</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#00691a",
+                    "surface-bright": "#f6f6f6",
+                    "surface-container-low": "#f0f1f1",
+                    "surface-container-high": "#e1e3e3",
+                    "outline-variant": "#acadad",
+                    "primary-container": "#91f78e",
+                    "on-surface": "#2d2f2f",
+                    "secondary": "#874e00",
+                    "tertiary-container": "#c1fd7c",
+                    "background": "#f6f6f6",
+                    "inverse-surface": "#0c0f0f",
+                    "secondary-container": "#ffc791",
+                    "tertiary-dim": "#345900",
+                    "inverse-primary": "#91f78e",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#4f2c00",
+                    "primary-dim": "#005d16",
+                    "on-tertiary-fixed": "#2c4d00",
+                    "secondary-fixed": "#ffc791",
+                    "on-secondary-fixed-variant": "#774400",
+                    "outline": "#767777",
+                    "surface": "#f6f6f6",
+                    "surface-dim": "#d3d5d5",
+                    "on-primary": "#d1ffc8",
+                    "inverse-on-surface": "#9c9d9d",
+                    "error-container": "#f95630",
+                    "on-secondary": "#fff0e5",
+                    "error-dim": "#b92902",
+                    "on-tertiary-container": "#396100",
+                    "on-error": "#ffefec",
+                    "tertiary-fixed": "#c1fd7c",
+                    "secondary-dim": "#764400",
+                    "surface-tint": "#006b1b",
+                    "on-tertiary": "#d9ffab",
+                    "tertiary-fixed-dim": "#b3ee6f",
+                    "surface-container": "#e7e8e8",
+                    "on-tertiary-fixed-variant": "#406c00",
+                    "on-error-container": "#520c00",
+                    "on-primary-fixed": "#00480f",
+                    "on-background": "#2d2f2f",
+                    "on-secondary-container": "#6a3c00",
+                    "primary": "#006b1b",
+                    "tertiary": "#3c6600",
+                    "surface-container-highest": "#dbdddd",
+                    "error": "#b02500",
+                    "on-primary-container": "#005e17",
+                    "primary-fixed-dim": "#83e881",
+                    "primary-fixed": "#91f78e",
+                    "secondary-fixed-dim": "#ffb467",
+                    "on-surface-variant": "#5a5c5c",
+                    "surface-variant": "#dbdddd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f6f6f6;
+        }
+        h1, h2, h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom scrollbar for horizontal recipe list */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-64">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-[#f6f6f6] dark:bg-zinc-900 border-b border-[#f0f1f1] dark:border-zinc-800 shadow-none">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-screen-xl mx-auto">
+<div class="flex items-center gap-2">
+<button class="material-symbols-outlined text-green-800 dark:text-green-400 hover:opacity-80 transition-opacity active:scale-90">menu</button>
+</div>
+<h1 class="text-green-800 dark:text-green-400 font-headline text-2xl font-bold tracking-tight italic">The Culinary Editorial</h1>
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full overflow-hidden border border-green-800/20 hover:opacity-80 transition-opacity cursor-pointer">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMn-7UTbtA9AV_trb3iqPgg9s8LUPc-QALMijIWZveNhkriknrphL6eSw7S7OWkBmmNSZ8WCe1B66r2K3coBmKn8fGaKCQe9EewwryLjcPMc2tOMm24uWA4ADTtnyR9Olm8JumcjjyZ4FBFrow0wHKDLefDuEeqzK5PGGv-RtzhDWRfyYNQZ_HWd0FRQdZ2Vbo1X7Z2b6gOkP1EBcJqyBsx1SbR5pDWR2S38Q_ruuimqRsYJgFjC5Rhszc7_P9rqO8uRvkdxLlJEXU"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-screen-xl mx-auto px-6 pt-6">
+<!-- Hero Section & Headline -->
+<section class="mb-10">
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">My Digital Fridge</h2>
+<p class="text-on-surface-variant font-medium max-w-md">Catalog your ingredients. Let AI curate your next gourmet masterpiece based on what's available.</p>
+</section>
+<!-- Search & Add Section -->
+<section class="mb-8">
+<div class="bg-surface-container-low p-6 rounded-[1.5rem] flex flex-col gap-4">
+<label class="font-headline font-bold text-sm text-on-surface-variant tracking-wide px-1">NEW INGREDIENT</label>
+<div class="flex gap-3">
+<div class="relative flex-1">
+<input class="w-full bg-surface-container-lowest border-none focus:ring-2 focus:ring-primary rounded-xl py-4 px-5 text-on-surface placeholder:text-outline/50 shadow-sm transition-all" placeholder="e.g., Organic Kale, Ribeye Steak..." type="text"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary opacity-60">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+</div>
+<button class="bg-secondary-container text-on-secondary-container px-8 rounded-xl font-headline font-bold hover:opacity-90 active:scale-95 transition-all">
+                        ADD
+                    </button>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout for Ingredients -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Left Column: Quick Stats & Scanning -->
+<div class="md:col-span-1 flex flex-col gap-6">
+<div class="bg-primary/5 p-6 rounded-[1.5rem] border border-primary/10">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">inventory_2</span>
+<span class="bg-primary-container text-on-primary-container text-xs font-bold px-3 py-1 rounded-full">8 ITEMS</span>
+</div>
+<h3 class="font-headline font-bold text-lg mb-1">Fridge Status</h3>
+<p class="text-sm text-on-surface-variant">Your current inventory is sufficient for 12 potential recipes.</p>
+</div>
+</div>
+<!-- Right Column: List of Items (Bento Style) -->
+<div class="md:col-span-2 space-y-4">
+<div class="flex justify-between items-end mb-4 px-2">
+<h3 class="font-headline font-extrabold text-2xl tracking-tight">Active Inventory</h3>
+<button class="text-primary font-bold text-sm underline-offset-4 hover:underline decoration-2">CLEAR ALL</button>
+</div>
+<!-- Ingredient Chips Container -->
+<div class="flex flex-wrap gap-3">
+<!-- Item Card -->
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">nutrition</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Fresh Salmon</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Protein</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">garden_cart</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Avocado</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Fats</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow border-2 border-primary/20">
+<div class="w-10 h-10 rounded-lg bg-primary-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">eco</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Baby Spinach</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Greens</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">liquor</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Heavy Cream</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Dairy</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">bakery_dining</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Pasta Fusilli</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Carbs</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest flex items-center gap-4 p-3 pl-4 rounded-xl shadow-[0_4px_12px_rgba(45,47,47,0.04)] group hover:shadow-md transition-shadow">
+<div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">emoji_objects</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-on-surface">Lemon</span>
+<span class="text-[10px] uppercase font-bold tracking-widest text-secondary">Acidity</span>
+</div>
+<button class="ml-4 p-1 hover:text-error transition-colors">
+<span class="material-symbols-outlined text-outline text-lg">close</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Generate Button -->
+<section class="mt-8 mb-12">
+<button class="w-full bg-primary text-on-primary flex items-center justify-center gap-3 px-8 py-5 rounded-2xl shadow-[0_20px_50px_rgba(0,107,27,0.15)] hover:scale-[1.02] active:scale-95 transition-all group overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-r from-primary-dim to-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="relative font-headline font-extrabold text-lg tracking-tight uppercase">Generate Recipes</span>
+<span class="relative material-symbols-outlined font-bold">arrow_forward_ios</span>
+</button>
+</section>
+<!-- Recommended Recipes Section (Newly Added) -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-extrabold text-2xl tracking-tight text-on-surface">Recommended Recipes</h3>
+<span class="text-xs font-bold text-primary px-3 py-1 bg-primary/10 rounded-full">3 MATCHES</span>
+</div>
+<!-- Interactive Recipe List -->
+<div class="flex flex-col gap-6">
+<!-- Recipe Card 1: Expanded Interactive State Placeholder -->
+<article class="bg-surface-container-lowest rounded-[2rem] shadow-lg overflow-hidden border border-outline-variant/10 transition-all duration-500">
+<!-- Header/Image Part -->
+<div class="relative h-48 sm:h-64 overflow-hidden group cursor-pointer">
+<img alt="Miso-Glazed Salmon" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABkSJZV0HiT7djOkomg3SQuvNfHjtUMI_VmqrFSTRiVSe6PlLjXhfgpL6f045ORa6jLrcKa8DXF7nUk2OruY4r41M0mI7WrF0L2TFSK7EpLJLYUikkpVoyBdG-tgdtDGYqHEHF0ucDbyALOtPWoVA2re1-NsF8WGnZCfhYRQnrCZrp5YCCKHRWwRvt-UTuhulChKODNRksAYmc-xRYFlSdW2T1AaUrjrRj8csOxkEl-EGar6tW_oWLbUJRPiciW2uwifDDFRNiiMDW"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute bottom-6 left-6 right-6">
+<span class="inline-block bg-tertiary-container text-on-tertiary-container text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full mb-2">Editor's Choice</span>
+<h4 class="text-white font-headline text-2xl font-bold">Miso-Glazed Salmon with Wilted Greens</h4>
+</div>
+<button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">expand_less</span>
+</button>
+</div>
+<!-- Expanded Content (Culinary Protocol & Elements) -->
+<div class="p-8 animate-in fade-in slide-in-from-top-4 duration-500">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Left: Elements (Ingredients) -->
+<div class="md:col-span-1">
+<h5 class="font-headline font-bold text-sm text-secondary tracking-widest uppercase mb-4 border-b border-outline-variant/20 pb-2">The Elements</h5>
+<ul class="space-y-3">
+<li class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-sm font-medium text-on-surface">Fresh Salmon Fillet</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-sm font-medium text-on-surface">Baby Spinach (2 cups)</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-sm font-medium text-on-surface">Lemon Zest &amp; Juice</span>
+</li>
+<li class="flex items-center gap-3 opacity-50">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="text-sm font-medium text-on-surface line-through">White Miso Paste</span>
+</li>
+</ul>
+</div>
+<!-- Right: Culinary Protocol -->
+<div class="md:col-span-2">
+<h5 class="font-headline font-bold text-sm text-secondary tracking-widest uppercase mb-4 border-b border-outline-variant/20 pb-2">Culinary Protocol</h5>
+<div class="space-y-6">
+<div class="flex gap-4">
+<span class="font-headline font-black text-2xl text-primary/20 leading-none">01</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                    Whisk miso, lemon juice, and a touch of honey. Pat the salmon dry and sear skin-side down for 4 minutes until crisp.
+                                </p>
+</div>
+<div class="flex gap-4">
+<span class="font-headline font-black text-2xl text-primary/20 leading-none">02</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                    Flip and glaze generously. Cook for 2 more minutes. Toss the baby spinach in the same pan for 30 seconds until just wilted.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/10 flex justify-between items-center">
+<div class="flex items-center gap-4 text-xs font-bold text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 22 MINS</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">local_fire_department</span> 450 KCAL</span>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-headline font-bold text-sm">SAVE TO JOURNAL</button>
+</div>
+</div>
+</article>
+<!-- Recipe Card 2: Collapsed State -->
+<article class="bg-surface-container-lowest rounded-[1.5rem] shadow-sm overflow-hidden border border-outline-variant/10 group cursor-pointer hover:shadow-md transition-all">
+<div class="flex h-32">
+<div class="w-1/3 overflow-hidden">
+<img alt="Garden Risotto" class="w-full h-full object-cover transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4ep0ms5xk5KJ_SgNT0koUDEYdm8iKQw08XXLd16WK6yviU3oO6TpGZ4qW0GHRFeAAFptcl0FuRK4QRdlxEUkuSdjuG_-10pRlUR1Gejo-DGx_XZ-FGcUYXWevK9Z3RZ81h_jVydP3E0_J62O0PlTSzONlSn9z7kwwFWYeiJmYO7cm5pbrlbHHf8jnGZTsPJMFwY2rXoDCgM7YPiH97lPceMgJFKWZ28SFLTX2izaJFPN25ZtgcjiniGbCJ_QPtfdB_OmlNCegf9J0"/>
+</div>
+<div class="w-2/3 p-5 flex flex-col justify-between relative">
+<div>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Seasonal</span>
+<h4 class="font-headline font-bold text-lg text-on-surface mt-1 group-hover:text-primary transition-colors">Lemon-Infused Garden Risotto</h4>
+</div>
+<div class="flex items-center gap-4 text-[10px] font-bold text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 35 MINS</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> INTERMEDIATE</span>
+</div>
+<div class="absolute right-6 bottom-5 text-outline group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Recipe Card 3: Collapsed State -->
+<article class="bg-surface-container-lowest rounded-[1.5rem] shadow-sm overflow-hidden border border-outline-variant/10 group cursor-pointer hover:shadow-md transition-all">
+<div class="flex h-32">
+<div class="w-1/3 overflow-hidden">
+<img alt="Creamy Pasta" class="w-full h-full object-cover transition-transform group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZWCrQocdr5LRqHqoxOj8NXlDEE5vZkH1g9A9_D9xBt6m1vQPHZD8jpk6CgYQ85jhrA_nzZdIAus9QqXPjHGA5G-rnUP1p397BDSybsy8QEPoBYS9SKLda9dwL5dwklgY41M8RLqSUsG3jhQgoHB-Y0h6y2w_k5DGzDP5TSqHDfljtHlZZkXvQPEPHebdQkQyJj8oOYVjq2oLt2GXmNxn_h-wzzZQHRU2LOWi5MiL5h0gPG6dIpBqz6Cfepx_fp2_oxX3Z_FrAHOVA"/>
+</div>
+<div class="w-2/3 p-5 flex flex-col justify-between relative">
+<div>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Comfort</span>
+<h4 class="font-headline font-bold text-lg text-on-surface mt-1 group-hover:text-primary transition-colors">Creamy Fusilli with Spinach &amp; Citrus</h4>
+</div>
+<div class="flex items-center gap-4 text-[10px] font-bold text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 15 MINS</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">bolt</span> BEGINNER</span>
+</div>
+<div class="absolute right-6 bottom-5 text-outline group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Bottom Empty State -->
+<section class="mt-8 bg-tertiary-container/20 rounded-[1.5rem] p-8 flex flex-col items-center text-center border-2 border-dashed border-tertiary/20">
+<span class="material-symbols-outlined text-4xl text-tertiary mb-3">auto_awesome</span>
+<h4 class="font-headline font-bold text-lg">Missing an essential?</h4>
+<p class="text-sm text-on-surface-variant max-w-xs mx-auto mt-2">Add your staples now to see even more refined recipe suggestions.</p>
+</section>
+</main>
+<!-- Chat Input Bar (Floating) -->
+<div class="fixed bottom-[88px] left-0 w-full z-40 px-4 pb-4 pointer-events-none">
+<div class="max-w-screen-xl mx-auto pointer-events-auto">
+<div class="bg-white/95 dark:bg-zinc-800/95 backdrop-blur-md rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-zinc-200/50 dark:border-zinc-700/50 p-2 flex items-center gap-2">
+<button class="bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 w-11 h-11 rounded-xl flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 active:scale-95 transition-all shadow-sm cursor-pointer" title="Upload or drop image">
+<span class="material-symbols-outlined">photo_camera</span>
+</button>
+<div class="flex-1 relative">
+<input class="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-xl py-3 px-4 text-on-surface placeholder:text-outline/60 focus:ring-2 focus:ring-primary/50 transition-all font-body text-sm" placeholder="e.g., How do I cook the salmon?" type="text"/>
+</div>
+<button class="bg-primary text-white w-11 h-11 rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-t-[1.5rem] shadow-[0_-12px_32px_rgba(45,47,47,0.08)]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors tap-highlight-transparent active:scale-95" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-body text-[10px] font-medium tracking-wide uppercase mt-1">Home</span>
+</a>
+<!-- Fridge (Active) -->
+<a class="flex flex-col items-center justify-center bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-200 rounded-[1.25rem] px-5 py-2 tap-highlight-transparent active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">kitchen</span>
+<span class="font-body text-[10px] font-medium tracking-wide uppercase mt-1">Fridge</span>
+</a>
+<!-- Scanner -->
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors tap-highlight-transparent active:scale-95" href="#">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="font-body text-[10px] font-medium tracking-wide uppercase mt-1">Scanner</span>
+</a>
+<!-- Feed -->
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors tap-highlight-transparent active:scale-95" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-body text-[10px] font-medium tracking-wide uppercase mt-1">Feed</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors tap-highlight-transparent active:scale-95" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body text-[10px] font-medium tracking-wide uppercase mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

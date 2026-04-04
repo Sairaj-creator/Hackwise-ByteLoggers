@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - The Culinary Editorial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#c1fd7c",
+                    "secondary-container": "#ffc791",
+                    "primary": "#006b1b",
+                    "surface-dim": "#d3d5d5",
+                    "on-secondary-fixed-variant": "#774400",
+                    "on-error-container": "#520c00",
+                    "on-primary-fixed": "#00480f",
+                    "tertiary-fixed-dim": "#b3ee6f",
+                    "secondary-fixed-dim": "#ffb467",
+                    "inverse-primary": "#91f78e",
+                    "on-primary-container": "#005e17",
+                    "on-secondary-fixed": "#4f2c00",
+                    "tertiary-container": "#c1fd7c",
+                    "on-surface-variant": "#5a5c5c",
+                    "on-error": "#ffefec",
+                    "primary-container": "#91f78e",
+                    "on-tertiary": "#d9ffab",
+                    "error-dim": "#b92902",
+                    "inverse-surface": "#0c0f0f",
+                    "secondary-fixed": "#ffc791",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#2d2f2f",
+                    "outline": "#767777",
+                    "on-primary": "#d1ffc8",
+                    "surface-tint": "#006b1b",
+                    "secondary-dim": "#764400",
+                    "background": "#f6f6f6",
+                    "inverse-on-surface": "#9c9d9d",
+                    "outline-variant": "#acadad",
+                    "primary-dim": "#005d16",
+                    "on-tertiary-fixed": "#2c4d00",
+                    "secondary": "#874e00",
+                    "error": "#b02500",
+                    "tertiary-dim": "#345900",
+                    "tertiary": "#3c6600",
+                    "surface-container-low": "#f0f1f1",
+                    "surface-container": "#e7e8e8",
+                    "on-tertiary-container": "#396100",
+                    "primary-fixed": "#91f78e",
+                    "surface-container-high": "#e1e3e3",
+                    "on-background": "#2d2f2f",
+                    "surface-container-highest": "#dbdddd",
+                    "primary-fixed-dim": "#83e881",
+                    "surface-variant": "#dbdddd",
+                    "on-tertiary-fixed-variant": "#406c00",
+                    "error-container": "#f95630",
+                    "surface": "#f6f6f6",
+                    "on-secondary-container": "#6a3c00",
+                    "on-secondary": "#fff0e5",
+                    "on-primary-fixed-variant": "#00691a",
+                    "surface-bright": "#f6f6f6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-[#f6f6f6] dark:bg-stone-950 flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-high ring-2 ring-primary/10">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional chef in a bright, modern kitchen setting, warm natural lighting, soft focus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZwMSeY2Ey27YCKjhbxbvYi0QNwLM9TXD065KQVap1dbq8Xniu6NONHBY_pGFN6A9sd-Wj2QByHjdoS9XfQpc3Z447a4Xig1gIHOrvB7akQ3JGrTtbQgiDS1MIEoOSR3Rv3kOIryIPm0Ike69OVYEnEMcs5FMk--HDsoB_lV4Uj8cEnLU6i2gdAcRRzdu4_Rp_xjLWCayKShdthFQoNOXScuC5wrL619PM1W4-IrSp87n2nny6Tm9OIeKNB8ydabrYVyPp_HHHyEBs"/>
+</div>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-bold text-lg text-xl font-bold tracking-tight text-[#006b1b] dark:text-green-400">The Culinary Editorial</h1>
+<button class="text-stone-600 dark:text-stone-400 hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<main class="max-w-md mx-auto px-6 pt-8 space-y-10">
+<!-- Profile Section -->
+<section class="relative">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="relative group">
+<div class="w-32 h-32 rounded-[2rem] overflow-hidden bg-surface-container-low shadow-sm">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Creative overhead shot of a person hands holding a fresh bunch of kale and carrots on a clean white surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAShg27lH1Uy0oyaQyZGREeY0SCgowi__hBVe98LnW7FsxeKgI-ydIPwUBzWWkX_olSRNDi8pNyMVHxGtESg6ltLAEMQnk0EfWFvpkooESQRBT5lfD1Q4O5MEQZBx61bzW0yPOSLLHPKLr-VbQe1pgVHPmQIkF4j_eZXqjSo_O2UQJY3NtTNYEb1ZUzjRYGjZAtAogUPhw5PMNb4fRhjgc3Yt0tn7hnBL4uY6DVvdCZLXtGhUGp4iqX12UYcxTYCGXek4lA4ZeemiGT"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary text-on-primary p-2 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</div>
+</div>
+<div>
+<h2 class="text-2xl font-extrabold tracking-tight text-on-surface">Alex Thompson</h2>
+<p class="text-sm font-medium text-primary bg-primary-container/30 px-3 py-1 rounded-full mt-2 inline-block">Chef ID: #8829-AI</p>
+</div>
+</div>
+</section>
+<!-- Description Area -->
+<section class="bg-surface-container-lowest rounded-[1.5rem] p-6 shadow-sm border border-transparent">
+<div class="flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<h3 class="text-label-md font-bold text-on-surface">Description</h3>
+</div>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                Passionate about farm-to-table AI-assisted gastronomy. Currently exploring plant-based Italian fusions and optimizing kitchen efficiency through smart pantry tracking.
+            </p>
+</section>
+<!-- Actions Bento Grid -->
+<section class="grid grid-cols-1 gap-4">
+<!-- Large Action Button 1 -->
+<button class="group flex items-center justify-between p-6 bg-surface-container-low rounded-[1.5rem] transition-all hover:bg-surface-container-high active:scale-95 duration-150">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-tertiary-container rounded-xl text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="update">update</span>
+</div>
+<div class="text-left">
+<span class="block font-bold text-on-surface">Version Feedback</span>
+<span class="text-xs text-on-surface-variant">Check for updates &amp; release notes</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Large Action Button 2 -->
+<button class="group flex items-center justify-between p-6 bg-surface-container-low rounded-[1.5rem] transition-all hover:bg-surface-container-high active:scale-95 duration-150">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-secondary-container rounded-xl text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+</div>
+<div class="text-left">
+<span class="block font-bold text-on-surface">Feedback</span>
+<span class="text-xs text-on-surface-variant">Report bugs or suggest recipes</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity" data-icon="chevron_right">chevron_right</span>
+</button>
+<!-- Large Action Button 3 (Logout) -->
+<button class="group flex items-center justify-between p-6 bg-error-container/10 rounded-[1.5rem] transition-all hover:bg-error-container/20 active:scale-95 duration-150 border border-error-container/20">
+<div class="flex items-center gap-4">
+<div class="p-3 bg-error-container rounded-xl text-white">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</div>
+<div class="text-left">
+<span class="block font-bold text-error-dim">Logout</span>
+<span class="text-xs text-on-surface-variant">Sign out of your editorial account</span>
+</div>
+</div>
+</button>
+</section>
+<!-- App Meta -->
+<div class="text-center py-4">
+<p class="text-[10px] uppercase tracking-widest text-outline font-bold">Verdant AI Kitchen System v2.4.0</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/70 dark:bg-stone-900/70 backdrop-blur-xl shadow-[0_-12px_32px_rgba(45,47,47,0.06)] rounded-t-[1.5rem]">
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="kitchen">kitchen</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Fridge</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="document_scanner">document_scanner</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Feed</span>
+</a>
+<!-- Active State: Settings -->
+<a class="flex flex-col items-center justify-center bg-[#f0f1f1] dark:bg-stone-800 text-[#006b1b] dark:text-green-400 rounded-[1.5rem] px-4 py-2 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Settings</span>
+</a>
+</nav>
+</body></html>

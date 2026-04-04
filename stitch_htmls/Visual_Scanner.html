@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Visual Scanner - The Culinary Editorial</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Be_Vietnam_Pro:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#c1fd7c",
+                    "secondary-container": "#ffc791",
+                    "primary": "#006b1b",
+                    "surface-dim": "#d3d5d5",
+                    "on-secondary-fixed-variant": "#774400",
+                    "on-error-container": "#520c00",
+                    "on-primary-fixed": "#00480f",
+                    "tertiary-fixed-dim": "#b3ee6f",
+                    "secondary-fixed-dim": "#ffb467",
+                    "inverse-primary": "#91f78e",
+                    "on-primary-container": "#005e17",
+                    "on-secondary-fixed": "#4f2c00",
+                    "tertiary-container": "#c1fd7c",
+                    "on-surface-variant": "#5a5c5c",
+                    "on-error": "#ffefec",
+                    "primary-container": "#91f78e",
+                    "on-tertiary": "#d9ffab",
+                    "error-dim": "#b92902",
+                    "inverse-surface": "#0c0f0f",
+                    "secondary-fixed": "#ffc791",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface": "#2d2f2f",
+                    "outline": "#767777",
+                    "on-primary": "#d1ffc8",
+                    "surface-tint": "#006b1b",
+                    "secondary-dim": "#764400",
+                    "background": "#f6f6f6",
+                    "inverse-on-surface": "#9c9d9d",
+                    "outline-variant": "#acadad",
+                    "primary-dim": "#005d16",
+                    "on-tertiary-fixed": "#2c4d00",
+                    "secondary": "#874e00",
+                    "error": "#b02500",
+                    "tertiary-dim": "#345900",
+                    "tertiary": "#3c6600",
+                    "surface-container-low": "#f0f1f1",
+                    "surface-container": "#e7e8e8",
+                    "on-tertiary-container": "#396100",
+                    "primary-fixed": "#91f78e",
+                    "surface-container-high": "#e1e3e3",
+                    "on-background": "#2d2f2f",
+                    "surface-container-highest": "#dbdddd",
+                    "primary-fixed-dim": "#83e881",
+                    "surface-variant": "#dbdddd",
+                    "on-tertiary-fixed-variant": "#406c00",
+                    "error-container": "#f95630",
+                    "surface": "#f6f6f6",
+                    "on-secondary-container": "#6a3c00",
+                    "on-secondary": "#fff0e5",
+                    "on-primary-fixed-variant": "#00691a",
+                    "surface-bright": "#f6f6f6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Be Vietnam Pro"],
+                    "label": ["Be Vietnam Pro"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanner-frame {
+            border: 2px solid transparent;
+            background: linear-gradient(to right, #006b1b 20px, transparent 20px) 0 0,
+                        linear-gradient(to right, #006b1b 20px, transparent 20px) 100% 0,
+                        linear-gradient(to left, #006b1b 20px, transparent 20px) 0 100%,
+                        linear-gradient(to left, #006b1b 20px, transparent 20px) 100% 100%,
+                        linear-gradient(to bottom, #006b1b 20px, transparent 20px) 0 0,
+                        linear-gradient(to bottom, #006b1b 20px, transparent 20px) 100% 0,
+                        linear-gradient(to top, #006b1b 20px, transparent 20px) 0 100%,
+                        linear-gradient(to top, #006b1b 20px, transparent 20px) 100% 100%;
+            background-repeat: no-repeat;
+            background-size: 40px 40px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-[#f6f6f6] dark:bg-stone-950 flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close-up professional portrait of a friendly man with a warm smile in a brightly lit kitchen setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4jSkPRkcV95Ki5NsAW6RsG3TlpVNgLcKKLjbCfUithQKc6yKLtrqXQ7ElaPH_HdWaYJJM9JK0SxDvpyVwtEnNpp37D-A_hj2XDVAFr91y8I_TQ5jRnnFM5WNctNK8N0cLk4dkciBMex3GBxT7RCzYxSopH8YdxX5wV79LiZSIse1oZ63AjGZ6Q3Tm7YTC6FNKOebjZK_RmnkzCFZlyLc8R3kqU7ht8_APzlJ4t_VJwL_CEoQzVXmmXqffu86AszGfcoEMz4eivNhP"/>
+</div>
+<h1 class="font-['Plus_Jakarta_Sans'] font-bold text-lg text-[#006b1b] dark:text-green-400 tracking-tight">The Culinary Editorial</h1>
+</div>
+<button class="text-stone-600 dark:text-stone-400 hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<main class="px-6 pt-4 max-w-2xl mx-auto">
+<!-- Header Text -->
+<div class="mb-8">
+<h2 class="font-headline font-extrabold text-3xl text-on-surface leading-tight mb-2">Identify Your Harvest</h2>
+<p class="font-body text-on-surface-variant text-lg">Point your camera at fresh ingredients to unlock AI-powered recipes.</p>
+</div>
+<!-- Scanner Viewport Area -->
+<div class="relative w-full aspect-[3/4] rounded-[2rem] overflow-hidden bg-surface-container-low shadow-2xl group">
+<!-- Simulated Camera Feed -->
+<img alt="Kitchen scene" class="w-full h-full object-cover brightness-75 transition-transform duration-700 group-hover:scale-105" data-alt="Rustic wooden kitchen table with fresh organic vegetables like kale, tomatoes, and bell peppers in soft natural daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmnYT8Y_IkvZFrt4K3bWljjoy49kb61c4FPWK_fe2B2dh8wXEXQgJg7Rg3fPkcnwOuThXjTFMeO3nCHp1eGHmZZXE-kdMiFuYeC1F8heT3icfF2wXuRHe1jAGxj4QcVMXyPWLdQUS9DeZQ9hei3_qMo3K9fPodvol9EncBhw-nwyVT6ufnV8t9Myyo9CzPGBCji0-r35blZM50_idgiH4LtX8ftuUVaWHJddNmn_Xn45dLIgKExNjU10ul6cVUvR0abyJsjGJtP3Tj"/>
+<!-- Dark Overlay for Focus -->
+<div class="absolute inset-0 bg-black/20"></div>
+<!-- Scanner Brackets -->
+<div class="absolute inset-12 scanner-frame pointer-events-none"></div>
+<!-- AI Detection Tag (Floating) -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4">
+<div class="bg-white/70 backdrop-blur-xl px-4 py-2 rounded-full border border-white/30 flex items-center gap-2 shadow-lg">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label text-sm font-semibold text-on-surface">Detecting Ingredients...</span>
+</div>
+</div>
+<!-- Scanner Icon -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2">
+<div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-xl ring-4 ring-white/20 active:scale-90 transition-transform cursor-pointer">
+<span class="material-symbols-outlined text-3xl" data-icon="document_scanner">document_scanner</span>
+</div>
+</div>
+</div>
+<!-- Action Grid -->
+<div class="mt-8 grid grid-cols-1 gap-4">
+<!-- Primary Action -->
+<button class="w-full bg-primary hover:bg-primary-dim text-on-primary font-headline font-bold py-5 rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="add_a_photo">add_a_photo</span>
+                Scan to add ingredients
+            </button>
+<!-- Secondary Action -->
+<button class="w-full bg-surface-container-lowest hover:bg-surface-container-low text-on-surface font-headline font-semibold py-5 rounded-xl flex items-center justify-center gap-3 transition-all border border-transparent active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+                Click to add manually
+            </button>
+</div>
+<!-- Detected Items Hint (Tonal Shift Card) -->
+<div class="mt-10 bg-surface-container-low p-6 rounded-[1.5rem]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline font-bold text-lg text-on-surface">Recently Detected</h3>
+<span class="text-xs font-label uppercase tracking-widest text-on-surface-variant">Live Session</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                    Kale <span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                    Red Pepper <span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</span>
+<span class="bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 border border-outline-variant/20">
+                    Cherry Tomato <span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/70 dark:bg-stone-900/70 backdrop-blur-xl shadow-[0_-12px_32px_rgba(45,47,47,0.06)] rounded-t-[1.5rem]">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Home</span>
+</a>
+<!-- Fridge -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="kitchen">kitchen</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Fridge</span>
+</a>
+<!-- Scan (Active) -->
+<a class="flex flex-col items-center justify-center bg-[#f0f1f1] dark:bg-stone-800 text-[#006b1b] dark:text-green-400 rounded-[1.5rem] px-4 py-2 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="document_scanner" style="font-variation-settings: 'FILL' 1;">document_scanner</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Scan</span>
+</a>
+<!-- Feed -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="auto_stories">auto_stories</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Feed</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-4 py-2 hover:text-[#006b1b] dark:hover:text-green-300 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-medium tracking-wide">Settings</span>
+</a>
+</nav>
+</body></html>
