@@ -50,12 +50,14 @@ export default function GenerateScreen() {
       const data = await api.generateRecipe({
         ingredients: selectedIngredients,
         servings,
-        cuisine: cuisine === 'Any' ? undefined : cuisine,
-        diet: diet === 'None' ? undefined : diet,
-        cook_time_max: cookTime ? parseInt(cookTime) : undefined,
-        spice_level: spice,
+        preferences: {
+          cuisine: cuisine === 'Any' ? '' : cuisine,
+          dietary: diet === 'None' ? '' : diet,
+          max_time_minutes: cookTime ? cookTime : '30',
+          spice_level: spice.toLowerCase(),
+        },
       });
-      setRecipe(data);
+      setRecipe(data.recipe || data);
     } catch (e: any) {
       setError(e.message || 'Generation failed');
     } finally {
@@ -76,10 +78,10 @@ export default function GenerateScreen() {
         <Image source={{ uri: PLACEHOLDER_IMAGES[0] }} style={styles.recipeImage} />
 
         <Text style={styles.recipeTitle}>{recipe.title}</Text>
-        <Text style={styles.recipeDesc}>{recipe.description}</Text>
+        <Text style={styles.recipeDesc}>{recipe.cuisine} · {recipe.difficulty}</Text>
 
         <View style={styles.badgeRow}>
-          <View style={styles.badge}><Ionicons name="time-outline" size={14} color={Colors.orange} /><Text style={styles.badgeText}>{recipe.total_time_minutes || recipe.cook_time_minutes} min</Text></View>
+          <View style={styles.badge}><Ionicons name="time-outline" size={14} color={Colors.orange} /><Text style={styles.badgeText}>{recipe.estimated_time_minutes} min</Text></View>
           <View style={styles.badge}><Ionicons name="people-outline" size={14} color={Colors.orange} /><Text style={styles.badgeText}>{recipe.servings} servings</Text></View>
           <View style={styles.badge}><Ionicons name="fitness-outline" size={14} color={Colors.orange} /><Text style={styles.badgeText}>{recipe.difficulty}</Text></View>
         </View>

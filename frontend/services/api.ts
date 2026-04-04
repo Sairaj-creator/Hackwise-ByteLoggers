@@ -21,7 +21,7 @@ async function request(path: string, options: RequestInit = {}): Promise<any> {
     // Try refresh
     const refreshToken = await getRefreshToken();
     if (refreshToken) {
-      const refreshRes = await fetch(`${API_BASE}/api/auth/refresh`, {
+      const refreshRes = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken }),
@@ -56,43 +56,43 @@ async function request(path: string, options: RequestInit = {}): Promise<any> {
 // Auth
 export const api = {
   register: (name: string, email: string, password: string) =>
-    request('/api/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) }),
+    request('/api/v1/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password }) }),
 
   login: (email: string, password: string) =>
-    request('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+    request('/api/v1/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
 
-  getMe: () => request('/api/auth/me'),
+  getMe: () => request('/api/v1/auth/me'),
 
   updateProfile: (data: any) =>
-    request('/api/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
+    request('/api/v1/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
 
   // Fridge
-  getFridge: () => request('/api/fridge'),
+  getFridge: () => request('/api/v1/fridge'),
 
   addIngredients: (ingredients: any[]) =>
-    request('/api/fridge/manual', { method: 'POST', body: JSON.stringify({ ingredients }) }),
+    request('/api/v1/fridge/manual', { method: 'POST', body: JSON.stringify({ ingredients }) }),
 
   updateFridgeItem: (itemId: string, data: any) =>
-    request(`/api/fridge/${itemId}`, { method: 'PUT', body: JSON.stringify(data) }),
+    request(`/api/v1/fridge/${itemId}`, { method: 'PUT', body: JSON.stringify(data) }),
 
   deleteFridgeItem: (itemId: string) =>
-    request(`/api/fridge/${itemId}`, { method: 'DELETE' }),
+    request(`/api/v1/fridge/${itemId}`, { method: 'DELETE' }),
 
   // Recipes
   generateRecipe: (data: any) =>
-    request('/api/recipes/generate', { method: 'POST', body: JSON.stringify(data) }),
+    request('/api/v1/recipes/generate', { method: 'POST', body: JSON.stringify(data) }),
 
-  getMyRecipes: () => request('/api/recipes/my'),
+  getMyRecipes: () => request('/api/v1/recipes/my'),
 
-  getRecipe: (recipeId: string) => request(`/api/recipes/${recipeId}`),
+  getRecipe: (recipeId: string) => request(`/api/v1/recipes/${recipeId}`),
 
-  getCookingData: (recipeId: string) => request(`/api/recipes/${recipeId}/cook`),
+  getCookingData: (recipeId: string) => request(`/api/v1/recipes/${recipeId}/cook`),
 
   toggleFavorite: (recipeId: string) =>
-    request(`/api/recipes/${recipeId}/favorite`, { method: 'POST' }),
+    request(`/api/v1/recipes/${recipeId}/favorite`, { method: 'POST' }),
 
-  getFavorites: () => request('/api/recipes/favorites'),
+  getFavorites: () => request('/api/v1/recipes/favorites'),
 
   doneCooking: (recipeId: string) =>
-    request(`/api/recipes/${recipeId}/done-cooking`, { method: 'POST' }),
+    request(`/api/v1/recipes/${recipeId}/done-cooking`, { method: 'POST' }),
 };

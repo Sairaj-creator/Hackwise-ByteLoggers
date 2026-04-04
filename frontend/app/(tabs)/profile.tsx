@@ -34,7 +34,9 @@ export default function ProfileScreen() {
   const saveAllergies = async () => {
     setSaving(true);
     try {
-      await updateProfile({ allergies });
+      await updateProfile({
+        allergies: allergies.map(a => ({ allergen: a, severity: 'moderate' })),
+      });
       setEditAllergies(false);
     } catch {} finally { setSaving(false); }
   };

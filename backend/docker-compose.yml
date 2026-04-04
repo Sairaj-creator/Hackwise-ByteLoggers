@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/recipe_db
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongo
+      - redis
+      - rabbitmq
+    volumes:
+      - .:/backend  # Mount code for hot-reloading in dev
+
+  celery-worker:
+    build: .
+    command: celery -A app.tasks.celery_app worker --loglevel=info
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/recipe_db
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - mongo
+      - redis
+      - rabbitmq
+    volumes:
+      - .:/backend
+
+  celery-beat:
+    build: .
+    command: celery -A app.tasks.celery_app beat --loglevel=info
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/recipe_db
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    volumes:
+      - .:/backend
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+
+volumes:
+  mongo_data:
