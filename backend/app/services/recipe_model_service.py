@@ -6,8 +6,9 @@ cuisine preference, dietary restrictions, and allergy information.
 """
 
 import json
+import re
 import logging
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel
 from google import genai
 from app.config import get_settings
@@ -113,15 +114,13 @@ Rules:
 
 def _parse_recipe_json(raw_text: str, request: ModelPredictionRequest) -> GeneratedRecipe:
     """Parse the Gemini response into a GeneratedRecipe object."""
-    # Clean up the response - remove markdown code fences if present
     text = raw_text.strip()
-    if text.startswith("```"):
-        # Remove ```json and ``` markers
-        lines = text.split("\n")
-        lines = [l for l in lines if not l.strip().startswith("```")]
-        text = "\n".join(lines)
-
-    data = json.loads(text)
+    # Robustly extract JSON object via regex (handles ```json fences, leading text, etc.)
+    obj_match = re.search(r'\{[\s\S]*\}', text)
+    if obj_match:
+        data = json.loads(obj_match.group(0))
+    else:
+        data = json.loads(text)
 
     return GeneratedRecipe(
         title=data.get("title", "Generated Recipe"),
@@ -161,12 +160,19 @@ async def predict_recipe(request: ModelPredictionRequest) -> GeneratedRecipe:
         )
 
         raw_text = response.text
+        if not raw_text:
+            raise ValueError("Gemini returned empty response")
         logger.info(f"Gemini recipe generated: {raw_text[:100]}...")
         return _parse_recipe_json(raw_text, request)
-
     except Exception as e:
         logger.warning(f"Gemini recipe generation failed: {e}. Using fallback.")
+
+    # Fallback is in a SEPARATE try so exceptions don't chain
+    try:
         return _build_fallback_recipe(request)
+    except Exception as fe:
+        logger.error(f"Fallback recipe also failed: {fe}", exc_info=True)
+        raise RuntimeError(f"Both Gemini and fallback recipe generation failed: {fe}") from fe
 
 
 async def predict_quick_recipe(

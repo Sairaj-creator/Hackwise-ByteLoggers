@@ -7,7 +7,9 @@ Endpoints: generate, list my recipes, detail, nutrients, cooking mode, favorites
 from fastapi import APIRouter, HTTPException, Depends, Query
 from datetime import datetime, timezone
 from bson import ObjectId
+from bson.errors import InvalidId
 import json
+import re
 from google import genai
 
 from app.config import get_settings
@@ -19,6 +21,59 @@ from app.services.cache_service import get_cached, set_cached, make_cache_key, N
 from app.models.recipe import RecipeGenerateRequest
 
 router = APIRouter(prefix="/api/v1/recipes", tags=["Recipes"])
+_log = __import__("logging").getLogger("uvicorn.error")
+
+# ─── In-memory fallback cache (used when Redis is unavailable) ───
+_mem_cache: dict = {}
+
+# ─── Static fallback data (served when Gemini quota is exhausted) ───
+_FALLBACK_INGREDIENTS = [
+    {"id": "ing-1", "name": "Avocado", "calories_per_100g": 160, "protein_g": 2.0, "carbs_g": 8.5, "fats_g": 14.7,
+     "benefits": ["Heart healthy fats", "Rich in fiber", "High in potassium", "Supports eye health", "Improves digestion", "Boosts brain function"]},
+    {"id": "ing-2", "name": "Spinach", "calories_per_100g": 23, "protein_g": 2.9, "carbs_g": 3.6, "fats_g": 0.4,
+     "benefits": ["High in iron", "Rich in vitamins A & C", "Supports bone health", "Anti-inflammatory", "Boosts immunity", "Improves eye health"]},
+    {"id": "ing-3", "name": "Quinoa", "calories_per_100g": 368, "protein_g": 14.1, "carbs_g": 64.2, "fats_g": 6.1,
+     "benefits": ["Complete protein source", "Gluten-free", "High in fiber", "Rich in magnesium", "Controls blood sugar", "Supports weight management"]},
+    {"id": "ing-4", "name": "Blueberries", "calories_per_100g": 57, "protein_g": 0.7, "carbs_g": 14.5, "fats_g": 0.3,
+     "benefits": ["High in antioxidants", "Improves brain function", "Supports heart health", "Anti-aging properties", "Reduces inflammation", "Boosts memory"]},
+    {"id": "ing-5", "name": "Salmon", "calories_per_100g": 208, "protein_g": 20.0, "carbs_g": 0.0, "fats_g": 13.0,
+     "benefits": ["Rich in omega-3", "High quality protein", "Supports heart health", "Reduces inflammation", "Boosts brain health", "Improves skin"]},
+    {"id": "ing-6", "name": "Sweet Potato", "calories_per_100g": 86, "protein_g": 1.6, "carbs_g": 20.1, "fats_g": 0.1,
+     "benefits": ["High in vitamin A", "Rich in fiber", "Antioxidant-rich", "Supports gut health", "Regulates blood sugar", "Boosts immunity"]},
+    {"id": "ing-7", "name": "Greek Yogurt", "calories_per_100g": 59, "protein_g": 10.0, "carbs_g": 3.6, "fats_g": 0.4,
+     "benefits": ["High in protein", "Rich in probiotics", "Supports gut health", "Strengthens bones", "Boosts immunity", "Low in calories"]},
+    {"id": "ing-8", "name": "Turmeric", "calories_per_100g": 354, "protein_g": 7.8, "carbs_g": 64.9, "fats_g": 9.9,
+     "benefits": ["Powerful anti-inflammatory", "Rich in antioxidants", "Improves brain function", "Reduces arthritis pain", "Supports heart health", "Natural detoxifier"]},
+    {"id": "ing-9", "name": "Almonds", "calories_per_100g": 579, "protein_g": 21.2, "carbs_g": 21.6, "fats_g": 49.9,
+     "benefits": ["Heart-healthy fats", "High in vitamin E", "Reduces cholesterol", "Supports weight control", "Boosts brain health", "Rich in magnesium"]},
+    {"id": "ing-10", "name": "Broccoli", "calories_per_100g": 34, "protein_g": 2.8, "carbs_g": 6.6, "fats_g": 0.4,
+     "benefits": ["Cancer-fighting compounds", "High in vitamin C", "Rich in fiber", "Supports bone health", "Boosts immunity", "Aids digestion"]},
+]
+
+_FALLBACK_TRENDING = [
+    {"recipe_id": "trending-fallback-0", "title": "Butter Chicken", "cuisine": "Indian", "difficulty": "Medium", "total_time_minutes": 45},
+    {"recipe_id": "trending-fallback-1", "title": "Avocado Toast with Poached Egg", "cuisine": "Modern", "difficulty": "Easy", "total_time_minutes": 15},
+    {"recipe_id": "trending-fallback-2", "title": "Pasta Aglio e Olio", "cuisine": "Italian", "difficulty": "Easy", "total_time_minutes": 20},
+    {"recipe_id": "trending-fallback-3", "title": "Thai Green Curry", "cuisine": "Thai", "difficulty": "Medium", "total_time_minutes": 35},
+]
+
+
+def _parse_gemini_json(raw_text: str):
+    """
+    Robustly parse JSON from a Gemini response that may contain markdown fences.
+    Tries regex extraction of array or object before falling back to raw parse.
+    """
+    text = raw_text.strip()
+    # Try to extract JSON array first (for list responses like trending/ingredients)
+    array_match = re.search(r'\[[\s\S]*\]', text)
+    if array_match:
+        return json.loads(array_match.group(0))
+    # Try JSON object
+    obj_match = re.search(r'\{[\s\S]*\}', text)
+    if obj_match:
+        return json.loads(obj_match.group(0))
+    # Last resort — parse as-is
+    return json.loads(text)
 
 
 # ─── Generate Recipe ───
@@ -40,17 +95,22 @@ async def generate_recipe(
         }).to_list(length=50)
         expiring_items = [i["ingredient_name"] for i in items]
 
-    # Generate via the 2-stage pipeline
-    result = await generate_recipe_pipeline(
-        ingredients=request.ingredients,
-        preferences=request.preferences,
-        user_allergies=user.get("allergies", []),
-        expiring_items=expiring_items,
-        servings=request.servings,
-    )
+    # Generate via the pipeline
+    try:
+        result = await generate_recipe_pipeline(
+            ingredients=request.ingredients,
+            preferences=request.preferences,
+            user_allergies=user.get("allergies", []),
+            expiring_items=expiring_items,
+            servings=request.servings,
+        )
+    except Exception as exc:
+        _log.error("generate_recipe_pipeline raised: %s", exc, exc_info=True)
+        raise HTTPException(500, f"Recipe generation error: {exc}")
 
     recipe_data = result.get("recipe")
     if not recipe_data:
+        _log.error("Pipeline returned no recipe: %s", result.get("error"))
         raise HTTPException(500, result.get("error", "Recipe generation failed"))
 
     # Mark which ingredients are from fridge
@@ -90,7 +150,9 @@ async def get_trending_recipes(
 ):
     """Generate or fetch 4 trending local recipes based on IP-location."""
     cache_key = make_cache_key("trending_recipes", location.strip().lower())
-    cached = await get_cached(cache_key)
+
+    # Check Redis cache first, then in-memory fallback
+    cached = await get_cached(cache_key) or _mem_cache.get(cache_key)
     if cached:
         return {"location": location, "recipes": cached}
 
@@ -115,34 +177,23 @@ Respond with ONLY valid JSON (no markdown, no code fences). The structure must b
         )
 
         raw_text = response.text.strip()
-        if raw_text.startswith("```"):
-            lines = raw_text.split("\n")
-            lines = [l for l in lines if not l.strip().startswith("```")]
-            raw_text = "\n".join(lines)
-            
-        recipes_data = json.loads(raw_text)
-        
+        recipes_data = _parse_gemini_json(raw_text)
+
         # Add dynamic ids
         for idx, r in enumerate(recipes_data):
             r["recipe_id"] = f"trending-{location.lower().replace(' ', '')}-{idx}"
             r["total_time_minutes"] = r.get("total_time_minutes", r.get("estimated_time_minutes", 30))
 
-        # Cache for 24 hours (86400 seconds)
+        # Cache in Redis and in-memory
         await set_cached(cache_key, recipes_data, 86400)
+        _mem_cache[cache_key] = recipes_data
 
         return {"location": location, "recipes": recipes_data}
 
     except Exception as e:
         import logging
-        logging.warning(f"Trending recipes fallback: {e}")
-        # Fallback payload
-        fallback = [
-             {"recipe_id": "mock-1", "title": "Local Artisan Bread", "cuisine": "Bakery", "difficulty": "Hard", "total_time_minutes": 120},
-             {"recipe_id": "mock-2", "title": "Farmhouse Salad", "cuisine": "Healthy", "difficulty": "Easy", "total_time_minutes": 15},
-             {"recipe_id": "mock-3", "title": "Regional Stew", "cuisine": "Comfort", "difficulty": "Medium", "total_time_minutes": 60},
-             {"recipe_id": "mock-4", "title": "Heritage Pasta", "cuisine": "Italian Fusion", "difficulty": "Medium", "total_time_minutes": 45},
-        ]
-        return {"location": location, "recipes": fallback}
+        logging.warning(f"Trending recipes error: {e}")
+        return {"location": location, "recipes": _FALLBACK_TRENDING}
 
 
 # ─── Ingredients Feed ───
@@ -153,7 +204,9 @@ async def get_ingredients_feed(
 ):
     """Generate or fetch 10 healthy ingredients with nutritional info."""
     cache_key = "ingredients_feed_daily_v3"
-    cached = await get_cached(cache_key)
+
+    # Check Redis cache first, then in-memory fallback
+    cached = await get_cached(cache_key) or _mem_cache.get(cache_key)
     if cached:
         return {"ingredients": cached}
 
@@ -180,27 +233,18 @@ Respond with ONLY valid JSON (no markdown, no code fences). The structure must b
         )
 
         raw_text = response.text.strip()
-        if raw_text.startswith("```"):
-            lines = raw_text.split("\n")
-            lines = [l for l in lines if not l.strip().startswith("```")]
-            raw_text = "\n".join(lines)
-            
-        feed_data = json.loads(raw_text)
-        
-        # Cache for 24 hours
+        feed_data = _parse_gemini_json(raw_text)
+
+        # Cache in Redis and in-memory
         await set_cached(cache_key, feed_data, 86400)
+        _mem_cache[cache_key] = feed_data
 
         return {"ingredients": feed_data}
 
     except Exception as e:
         import logging
-        logging.warning(f"Ingredients feed fallback: {e}")
-        # Fallback payload
-        fallback = [
-             {"id": "mock-1", "name": "Quinoa", "calories_per_100g": 120, "protein_g": 4.1, "carbs_g": 21.3, "fats_g": 1.9, "benefits": ["High protein", "Gluten-free", "Rich in iron"]},
-             {"id": "mock-2", "name": "Chia Seeds", "calories_per_100g": 486, "protein_g": 16.5, "carbs_g": 42.1, "fats_g": 30.7, "benefits": ["Omega-3 rich", "High fiber", "Antioxidants"]},
-        ]
-        return {"ingredients": fallback}
+        logging.warning(f"Ingredients feed error: {e}")
+        return {"ingredients": _FALLBACK_INGREDIENTS}
 
 
 # ─── My Recipes ───
@@ -264,11 +308,32 @@ async def toggle_favorite(recipe_id: str, user: dict = Depends(get_current_user)
 @router.get("/{recipe_id}")
 async def get_recipe_detail(recipe_id: str, user: dict = Depends(get_current_user)):
     db = get_database()
-    recipe = await db.recipes.find_one({"_id": ObjectId(recipe_id)})
+    try:
+        oid = ObjectId(recipe_id)
+        recipe = await db.recipes.find_one({"_id": oid})
+    except InvalidId:
+        if recipe_id.startswith("mock-") or recipe_id.startswith("trending-"):
+            return _serialize_recipe({
+                "_id": recipe_id,
+                "title": "Trending Recipe Detail",
+                "cuisine": "Local",
+                "estimated_time_minutes": 30,
+                "difficulty": "Medium",
+                "ingredients": [
+                    {"name": "Fresh Produce", "quantity": "2", "unit": "cups"},
+                    {"name": "Spices", "quantity": "1", "unit": "tbsp"}
+                ],
+                "preparation_steps": [
+                    {"step": 1, "instruction": "Gather the ingredients.", "time_minutes": 5},
+                    {"step": 2, "instruction": "Cook until done.", "time_minutes": 25}
+                ]
+            })
+        raise HTTPException(404, "Invalid recipe ID format")
+        
     if not recipe:
         raise HTTPException(404, "Recipe not found")
 
-    is_fav = ObjectId(recipe_id) in user.get("favorite_recipe_ids", [])
+    is_fav = oid in user.get("favorite_recipe_ids", [])
     return _serialize_recipe(recipe, is_favorited=is_fav)
 
 
@@ -277,7 +342,12 @@ async def get_recipe_detail(recipe_id: str, user: dict = Depends(get_current_use
 @router.get("/{recipe_id}/nutrients")
 async def get_recipe_nutrients(recipe_id: str, user: dict = Depends(get_current_user)):
     db = get_database()
-    recipe = await db.recipes.find_one({"_id": ObjectId(recipe_id)})
+    try:
+        oid = ObjectId(recipe_id)
+        recipe = await db.recipes.find_one({"_id": oid})
+    except InvalidId:
+        return {"calories": 400, "protein_g": 20, "carbs_g": 40, "fat_g": 15, "fiber_g": 5}
+        
     if not recipe:
         raise HTTPException(404, "Recipe not found")
 
@@ -313,7 +383,18 @@ async def get_recipe_nutrients(recipe_id: str, user: dict = Depends(get_current_
 @router.get("/{recipe_id}/cook")
 async def cooking_mode(recipe_id: str, user: dict = Depends(get_current_user)):
     db = get_database()
-    recipe = await db.recipes.find_one({"_id": ObjectId(recipe_id)})
+    try:
+        oid = ObjectId(recipe_id)
+        recipe = await db.recipes.find_one({"_id": oid})
+    except InvalidId:
+        recipe = {
+            "title": "Mock Cooking Session",
+            "preparation_steps": [
+                {"step": 1, "instruction": "Gather the ingredients.", "time_minutes": 5},
+                {"step": 2, "instruction": "Cook until done.", "time_minutes": 25}
+            ]
+        }
+        
     if not recipe:
         raise HTTPException(404, "Recipe not found")
 
@@ -332,6 +413,8 @@ async def cooking_mode(recipe_id: str, user: dict = Depends(get_current_user)):
     youtube_url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}" if query else ""
 
     return {
+        "title": recipe.get("title", ""),
+        "image_url": recipe.get("image_url", ""),
         "steps": steps,
         "total_time_minutes": total_time,
         "youtube_embed_url": youtube_url,
@@ -343,8 +426,13 @@ async def cooking_mode(recipe_id: str, user: dict = Depends(get_current_user)):
 async def done_cooking(recipe_id: str, user: dict = Depends(get_current_user)):
     db = get_database()
     
+    try:
+        oid = ObjectId(recipe_id)
+    except InvalidId:
+        return {"status": "success", "message": "Mock cooking counted"}
+        
     result = await db.recipes.update_one(
-        {"_id": ObjectId(recipe_id)},
+        {"_id": oid},
         {"$inc": {"times_cooked": 1}}
     )
     
@@ -363,6 +451,8 @@ def _serialize_recipe(doc: dict, is_favorited: bool = False) -> dict:
         "id": str(doc.get("_id", "")),
         "recipe_id": str(doc.get("_id", "")),
         "title": doc.get("title", ""),
+        "description": doc.get("description", ""),
+        "image_url": doc.get("image_url", ""),
         "cuisine": doc.get("cuisine", ""),
         "estimated_time_minutes": doc.get("estimated_time_minutes", 0),
         "difficulty": doc.get("difficulty", "easy"),

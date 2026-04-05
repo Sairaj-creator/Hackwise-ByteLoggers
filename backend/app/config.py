@@ -37,10 +37,13 @@ class Settings(BaseSettings):
     # ─── Admin ───
     ADMIN_EMAIL: str = ""  # Set this in .env to grant admin access
 
+    HUGGINGFACE_API_KEY: str = "" # Added to support the new AI Pipeline
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
         case_sensitive = True
+        extra = "allow"
 
 
 @lru_cache()

@@ -55,10 +55,10 @@ class GeminiRefiner:
     def __init__(self):
         import google.generativeai as genai
 
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
             raise ValueError(
-                "GOOGLE_API_KEY not found in environment. "
+                "GEMINI_API_KEY not found in environment. "
                 "Add it to backend/.env file."
             )
         genai.configure(api_key=api_key)
@@ -199,9 +199,9 @@ async def generate_recipe_with_gemini(
     """
     import google.generativeai as genai
 
-    api_key = os.getenv("GOOGLE_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        return {"status": "error", "message": "GOOGLE_API_KEY not configured in .env"}
+        return {"status": "error", "message": "GEMINI_API_KEY not configured in .env"}
 
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel("gemini-2.0-flash")

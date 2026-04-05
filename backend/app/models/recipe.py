@@ -5,7 +5,7 @@ Pydantic models for recipe generation, detail, and nutrition.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 
@@ -47,7 +47,7 @@ class NutritionData(BaseModel):
 
 class RecipeGenerateRequest(BaseModel):
     ingredients: List[str]
-    preferences: Dict[str, str] = {}
+    preferences: Dict[str, Any] = {}
     prioritize_expiring: bool = True
     servings: int = 2
 
