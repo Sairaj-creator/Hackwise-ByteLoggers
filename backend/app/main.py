@@ -17,7 +17,7 @@ from app.database.mongodb import connect_to_mongo, close_mongo_connection
 from app.database.redis import connect_to_redis, close_redis_connection
 
 # ─── Routers ───
-from app.routers import auth, fridge, recipes, meal_planner, waste_tracker, social, websocket
+from app.routers import auth, fridge, recipes, meal_planner, waste_tracker, social, websocket, feedback
 
 
 # ─── Lifespan: startup / shutdown ───
@@ -66,6 +66,7 @@ app.include_router(meal_planner.router)
 app.include_router(waste_tracker.router)
 app.include_router(social.router)
 app.include_router(websocket.router)
+app.include_router(feedback.router)
 
 
 # ─── Health Check ───

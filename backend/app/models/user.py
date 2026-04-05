@@ -60,6 +60,7 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: str
+    is_admin: bool = False
     allergies: List[AllergyEntry] = []
     dietary_preferences: List[str] = []
     cuisine_preferences: List[str] = []

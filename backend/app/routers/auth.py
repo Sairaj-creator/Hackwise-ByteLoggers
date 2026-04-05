@@ -17,6 +17,7 @@ from app.dependencies import (
     get_current_user,
 )
 from app.database.mongodb import get_database
+from app.config import get_settings
 from app.models.user import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -36,10 +37,14 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 def _user_to_response(user: dict) -> UserResponse:
     """Convert a MongoDB user document to a UserResponse."""
+    settings = get_settings()
+    admin_email = settings.ADMIN_EMAIL.strip().lower()
+    user_email = user.get("email", "").strip().lower()
     return UserResponse(
         id=str(user["_id"]),
         name=user.get("name", ""),
         email=user.get("email", ""),
+        is_admin=(bool(admin_email) and user_email == admin_email),
         allergies=user.get("allergies", []),
         dietary_preferences=user.get("dietary_preferences", []),
         cuisine_preferences=user.get("cuisine_preferences", []),

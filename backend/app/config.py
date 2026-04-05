@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     # ─── External ───
     CLOUDINARY_URL: str = ""
 
+    # ─── Admin ───
+    ADMIN_EMAIL: str = ""  # Set this in .env to grant admin access
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
