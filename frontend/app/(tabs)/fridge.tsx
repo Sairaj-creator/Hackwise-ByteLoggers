@@ -69,7 +69,7 @@ export default function FridgeScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Clear', style: 'destructive', onPress: async () => { 
           // Assuming api has clear or sequential deletes
-          await Promise.all(items.map(i => api.deleteFridgeItem(i.item_id))); 
+          await Promise.allSettled(items.map(i => api.deleteFridgeItem(i.item_id))); 
           loadItems(); 
         } 
       },
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   itemIconBox: { width: 40, height: 40, borderRadius: 8, backgroundColor: C.surfaceLow, alignItems: 'center', justifyContent: 'center' },
   itemInfo: { flex: 1, marginLeft: 16 },
   itemName: { fontSize: 16, fontWeight: '800', color: C.onSurface },
-  itemCategory: { fontSize: 10, uppercase: 'true', fontWeight: 'bold', letterSpacing: 1, color: C.secondary, marginTop: 2 },
+  itemCategory: { fontSize: 10, textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: 1, color: C.secondary, marginTop: 2 },
   deleteBtn: { padding: 8 },
   missingBox: {
     marginTop: 32, backgroundColor: 'rgba(193,253,124,0.2)', borderRadius: 24, padding: 32,

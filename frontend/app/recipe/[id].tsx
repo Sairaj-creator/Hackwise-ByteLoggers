@@ -93,7 +93,7 @@ export default function RecipeDetailScreen() {
           <View style={styles.heroContentRow}>
             <View style={styles.heroTitleBox}>
               <Text style={styles.heroTitle}>{recipe.title}</Text>
-              <Text style={styles.heroMeta}>{recipe.difficulty?.toUpperCase()} • {recipe.total_time_minutes || recipe.cook_time_minutes} MINS</Text>
+              <Text style={styles.heroMeta}>{recipe.difficulty?.toUpperCase()} • {recipe.estimated_time_minutes} MINS</Text>
             </View>
             <TouchableOpacity style={styles.playBtn}>
               <Ionicons name="play" size={24} color={C.onError} />
@@ -164,10 +164,10 @@ export default function RecipeDetailScreen() {
                 {(recipe.steps || []).map((step: any, idx: number) => (
                   <View key={idx} style={styles.stepRow}>
                     <View style={styles.stepNumWrap}>
-                      <Text style={styles.stepNum}>{step.step_number || idx + 1}</Text>
+                      <Text style={styles.stepNum}>{step.step || idx + 1}</Text>
                     </View>
                     <View style={styles.stepTextWrap}>
-                      <Text style={styles.stepTitle}>Step {step.step_number || idx + 1}</Text>
+                      <Text style={styles.stepTitle}>Step {step.step || idx + 1}</Text>
                       <Text style={styles.stepDesc}>{step.instruction}</Text>
                     </View>
                   </View>
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 16, backgroundColor: C.primary,
     alignItems: 'center', justifyContent: 'center', marginTop: 2
   },
-  stepNum: { color: C.surfaceLowest, fontSize: 14, fontWeight: 'bold' },
+  stepNum: { color: C.surfaceContainerLowest, fontSize: 14, fontWeight: 'bold' },
   stepTextWrap: { flex: 1 },
   stepTitle: { fontSize: 16, fontWeight: 'bold', color: C.onSurface, marginBottom: 8 },
   stepDesc: { fontSize: 14, color: C.onSurfaceVariant, lineHeight: 22 },
@@ -292,14 +292,14 @@ const styles = StyleSheet.create({
   },
   mcLeft: { flexDirection: 'row', alignItems: 'center', gap: 24 },
   mcIconWrap: {
-    width: 80, height: 80, backgroundColor: C.surfaceLowest, borderRadius: 16,
+    width: 80, height: 80, backgroundColor: C.surfaceContainerLowest, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10,
   },
   mcTexts: { flex: 1 },
   mcTitle: { fontSize: 20, fontWeight: 'bold', color: C.onSecondaryContainer },
   mcDesc: { fontSize: 14, color: C.onSecondaryContainer, opacity: 0.8 },
   mcBtn: {
-    backgroundColor: C.surfaceLowest, paddingVertical: 12, paddingHorizontal: 32,
+    backgroundColor: C.surfaceContainerLowest, paddingVertical: 12, paddingHorizontal: 32,
     borderRadius: 24, alignItems: 'center', marginTop: 16
   },
   mcBtnText: { color: C.secondary, fontSize: 16, fontWeight: 'bold' },

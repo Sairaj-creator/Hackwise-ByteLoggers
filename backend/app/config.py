@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     # ─── AI Services ───
     CNN_SERVICE_URL: str = "http://localhost:8001"
     GEMINI_API_KEY: str = "placeholder_until_teammate_provides"
+    GOOGLE_API_KEY: str = "placeholder_until_teammate_provides"
 
     # ─── External ───
     CLOUDINARY_URL: str = ""

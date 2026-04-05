@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, ActivityIndicator, Image, Modal, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 import { api } from '@/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -52,19 +53,50 @@ export default function GenerateScreen() {
     setSelectedIngredients(prev => prev.filter(n => n !== name));
   };
 
-  const handleScanMock = () => {
-    setScanning(true);
-    setTimeout(() => {
-      setScanning(false);
-      // Pick random item not already selected
-      const available = fridgeItems.filter(i => !selectedIngredients.includes(i.name));
-      if (available.length > 0) {
-        const randomItem = available[Math.floor(Math.random() * available.length)];
-        setSelectedIngredients(prev => [...prev, randomItem.name]);
-      } else {
-        Alert.alert('Scan Complete', "We couldn't detect new ingredients.");
+  const handleScan = async (useCamera: boolean = true) => {
+    try {
+      const permissionResult = useCamera 
+        ? await ImagePicker.requestCameraPermissionsAsync()
+        : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (permissionResult.granted === false) {
+        Alert.alert('Permission needed', `You need to grant ${useCamera ? 'camera' : 'gallery'} permissions to scan ingredients.`);
+        return;
       }
-    }, 1500);
+
+      const result = useCamera
+        ? await ImagePicker.launchCameraAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 0.8,
+          })
+        : await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            quality: 0.8,
+          });
+
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setScanning(true);
+        const imageUri = result.assets[0].uri;
+        
+        const response = await api.scanImage(imageUri);
+        const recognized = response.detected_ingredients || [];
+        
+        if (recognized.length > 0) {
+          setSelectedIngredients(prev => {
+            const newItems = recognized.map((ing: any) => ing.name).filter((name: string) => !prev.includes(name));
+            return [...prev, ...newItems];
+          });
+        } else {
+          Alert.alert('Scan Complete', "We couldn't detect new ingredients in that photo.");
+        }
+      }
+    } catch (e: any) {
+      Alert.alert('Scan Error', e.message || 'Failed to scan image.');
+    } finally {
+      setScanning(false);
+    }
   };
 
   const handleManualAdd = () => {
@@ -87,7 +119,7 @@ export default function GenerateScreen() {
         preferences: {
           cuisine: '',
           dietary: '',
-          max_time_minutes: '30',
+          max_time_minutes: 30,
           spice_level: 'medium',
         },
       });
@@ -122,7 +154,7 @@ export default function GenerateScreen() {
 
           <TouchableOpacity testID="generate-view-full-btn" style={styles.viewFullBtn} onPress={() => router.push(`/recipe/${recipe.recipe_id}`)}>
             <Text style={styles.viewFullText}>View Full Recipe</Text>
-            <Ionicons name="arrow-forward" size={18} color={C.surfaceLowest} />
+            <Ionicons name="arrow-forward" size={18} color={C.surfaceContainerLowest} />
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -173,15 +205,15 @@ export default function GenerateScreen() {
             </View>
           )}
 
-          <TouchableOpacity style={styles.scannerIconBtn} onPress={handleScanMock}>
+          <TouchableOpacity style={styles.scannerIconBtn} onPress={() => handleScan(true)}>
             <Ionicons name="scan-outline" size={32} color={C.onPrimary} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.actionGrid}>
-          <TouchableOpacity style={styles.primaryActionBtn} onPress={handleScanMock} disabled={scanning}>
-            <Ionicons name="camera" size={20} color={C.onPrimary} />
-            <Text style={styles.primaryActionText}>{scanning ? 'Scanning...' : 'Scan to add ingredients'}</Text>
+          <TouchableOpacity style={styles.primaryActionBtn} onPress={() => handleScan(false)} disabled={scanning}>
+            <Ionicons name="images" size={20} color={C.onPrimary} />
+            <Text style={styles.primaryActionText}>{scanning ? 'Scanning...' : 'Upload from Gallery'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.secondaryActionBtn} onPress={() => setShowManualAdd(true)}>
@@ -197,8 +229,8 @@ export default function GenerateScreen() {
           </View>
           
           <View style={styles.chipWrap}>
-            {selectedIngredients.map(item => (
-              <View key={item} style={styles.chip}>
+            {selectedIngredients.map((item, index) => (
+              <View key={`${item}-${index}`} style={styles.chip}>
                 <Text style={styles.chipText}>{item}</Text>
                 <TouchableOpacity onPress={() => removeIngredient(item)}>
                   <Ionicons name="close" size={16} color={C.onTertiaryContainer} />
@@ -214,10 +246,10 @@ export default function GenerateScreen() {
         {selectedIngredients.length > 0 && (
           <TouchableOpacity testID="gen-submit-btn" style={styles.generateBtn} onPress={handleGenerate} disabled={generating}>
             {generating ? (
-              <ActivityIndicator color={C.surfaceLowest} />
+              <ActivityIndicator color={C.surfaceContainerLowest} />
             ) : (
               <>
-                <Ionicons name="sparkles" size={20} color={C.surfaceLowest} />
+                <Ionicons name="sparkles" size={20} color={C.surfaceContainerLowest} />
                 <Text style={styles.generateText}>Generate AI Recipe</Text>
               </>
             )}
@@ -242,7 +274,7 @@ export default function GenerateScreen() {
                 <Text style={{color: C.onSurfaceVariant, fontWeight:'bold'}}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.modalAdd} onPress={handleManualAdd}>
-                <Text style={{color: C.surfaceLowest, fontWeight:'bold'}}>Add</Text>
+                <Text style={{color: C.surfaceContainerLowest, fontWeight:'bold'}}>Add</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -333,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: C.onSurface, borderRadius: 16, paddingVertical: 20,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 40
   },
-  generateText: { color: C.surfaceLowest, fontSize: 16, fontWeight: 'bold' },
+  generateText: { color: C.surfaceContainerLowest, fontSize: 16, fontWeight: 'bold' },
 
   // Result styling
   resultContent: { padding: 24, paddingBottom: 60 },
@@ -344,11 +376,11 @@ const styles = StyleSheet.create({
   badge: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: C.surfaceContainerLowest, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: C.surfaceContainerHigh },
   badgeText: { fontSize: 14, color: C.onSurfaceVariant, fontWeight: '600' },
   viewFullBtn: { backgroundColor: C.primary, borderRadius: 16, paddingVertical: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 40 },
-  viewFullText: { color: C.surfaceLowest, fontSize: 18, fontWeight: 'bold' },
+  viewFullText: { color: C.surfaceContainerLowest, fontSize: 18, fontWeight: 'bold' },
 
   // Modal
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },
-  modalContent: { width: '100%', backgroundColor: C.surfaceLowest, borderRadius: 24, padding: 24 },
+  modalContent: { width: '100%', backgroundColor: C.surfaceContainerLowest, borderRadius: 24, padding: 24 },
   modalTitle: { fontSize: 18, fontWeight: 'bold', color: C.onSurface, marginBottom: 16 },
   modalInput: { backgroundColor: C.surface, borderRadius: 12, padding: 16, fontSize: 16, color: C.onSurface, marginBottom: 24 },
   modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 16 },

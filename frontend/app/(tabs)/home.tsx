@@ -86,7 +86,7 @@ export default function HomeScreen() {
         {heroRecipe ? (
           <View style={styles.heroCard}>
             <View style={styles.heroImageContainer}>
-               <Image source={{ uri: PLACEHOLDER_IMAGES[0 % PLACEHOLDER_IMAGES.length] }} style={styles.heroImage} />
+               <Image source={{ uri: heroRecipe.image_url || PLACEHOLDER_IMAGES[(heroRecipe.title?.length || 0) % PLACEHOLDER_IMAGES.length] }} style={styles.heroImage} />
                <View style={styles.aiBadge}>
                   <Ionicons name="flash" size={12} color={C.primary} />
                   <Text style={styles.aiBadgeText}>AI MATCH 98%</Text>
@@ -128,7 +128,7 @@ export default function HomeScreen() {
             {recentRecipes.map((recipe, i) => (
               <TouchableOpacity key={recipe.recipe_id} style={styles.gridCard} onPress={() => router.push(`/recipe/${recipe.recipe_id}`)}>
                 <View style={styles.gridImageContainer}>
-                  <Image source={{ uri: PLACEHOLDER_IMAGES[(i+1) % PLACEHOLDER_IMAGES.length] }} style={styles.gridImage} />
+                  <Image source={{ uri: recipe.image_url || PLACEHOLDER_IMAGES[((recipe.title?.length || 0) + i) % PLACEHOLDER_IMAGES.length] }} style={styles.gridImage} />
                 </View>
                 <View style={styles.gridContent}>
                   <View style={styles.gridRow}>
