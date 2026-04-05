@@ -102,10 +102,41 @@ next-env.d.ts
 *.pem
 
 # ══════════════════════════════════════
+# AI Model Binaries
+# ══════════════════════════════════════
+backend/ai_models/*.pt
+backend/ai_models/*.joblib
+backend/ai_models/*.pkl
+backend/ai_models/*.h5
+backend/ai_models/*.onnx
+
+# ══════════════════════════════════════
+# Backend — Generated / Debug
+# ══════════════════════════════════════
+backend/debug_all.py
+backend/debug_output.txt
+backend/celerybeat-schedule
+backend/celerybeat-schedule.db
+backend/ip.txt
+backend/.venv/
+
+# ══════════════════════════════════════
+# Stitch exports & one-off scripts
+# ══════════════════════════════════════
+stitch_htmls/
+download_stitch.py
+
+# ══════════════════════════════════════
+# Test reports & test fixtures
+# ══════════════════════════════════════
+test_reports/
+tests/
+
+# ══════════════════════════════════════
 # Misc project-specific
 # ══════════════════════════════════════
 design_guidelines.json
-test_reports/
+tracked.txt
 .gitconfig
 .chainlit
 chainlit.md

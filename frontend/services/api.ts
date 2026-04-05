@@ -18,6 +18,11 @@ async function request(path: string, options: RequestInit = {}): Promise<any> {
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
   if (res.status === 401) {
+    if (path === '/api/v1/auth/login' || path === '/api/v1/auth/register') {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Invalid email or password');
+    }
+
     // Try refresh
     const refreshToken = await getRefreshToken();
     if (refreshToken) {
@@ -147,8 +152,8 @@ export const api = {
 
   getMealPlan: (planId: string) => request(`/api/v1/meal-planner/${planId}`),
 
-  swapMeal: (planId: string, day: number, meal: string) =>
-    request(`/api/v1/meal-planner/${planId}/swap`, { method: 'PUT', body: JSON.stringify({ day, meal }) }),
+  swapMeal: (planId: string, day: number, meal: string, reason: string = 'not_in_mood') =>
+    request(`/api/v1/meal-planner/${planId}/swap`, { method: 'PUT', body: JSON.stringify({ day, meal, reason }) }),
 
   getShoppingList: (planId: string) => request(`/api/v1/meal-planner/${planId}/shopping-list`),
 

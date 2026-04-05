@@ -63,6 +63,12 @@ export const DIETS = [
 export const SPICE_LEVELS = ['Mild', 'Medium', 'Spicy', 'Extra Spicy'];
 
 export const PLACEHOLDER_IMAGES = [
-  'https://images.unsplash.com/photo-1767441358044-14d9f8f5b53d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxkZWxpY2lvdXMlMjBwbGF0ZWQlMjBtZWFsJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85',
-  'https://images.unsplash.com/photo-1759753930774-4ca761c06c9c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxkZWxpY2lvdXMlMjBwbGF0ZWQlMjBtZWFsJTIwcmVzdGF1cmFudHxlbnwwfHx8fDE3NzUzMTM5NTd8MA&ixlib=rb-4.1.0&q=85',
+  'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1524145986121-72f3e827a421?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1767441358044-14d9f8f5b53d?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1759753930774-4ca761c06c9c?auto=format&fit=crop&w=800&q=80',
+  'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80',
 ];

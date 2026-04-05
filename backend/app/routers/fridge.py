@@ -74,8 +74,9 @@ async def scan_ingredients(
     image: UploadFile = File(...),
     user: dict = Depends(get_current_user),
 ):
-    if image.content_type not in ["image/jpeg", "image/png"]:
-        raise HTTPException(400, "Only JPEG and PNG images are accepted")
+    ALLOWED_TYPES = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+    if image.content_type not in ALLOWED_TYPES:
+        raise HTTPException(400, "Only JPEG, PNG or WebP images are accepted")
 
     image_bytes = await image.read()
     if len(image_bytes) > 10 * 1024 * 1024:
@@ -84,7 +85,9 @@ async def scan_ingredients(
     try:
         from app.services.cnn_service import detect_ingredients_from_image
         result = await detect_ingredients_from_image(image_bytes)
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.getLogger("uvicorn.error").error(f"CNN scan failed: {e}", exc_info=True)
         return FridgeScanResponse(
             detected_ingredients=[],
             processing_time_ms=0,

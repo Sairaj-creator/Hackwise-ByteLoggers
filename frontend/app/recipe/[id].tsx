@@ -93,7 +93,7 @@ export default function RecipeDetailScreen() {
           <View style={styles.heroContentRow}>
             <View style={styles.heroTitleBox}>
               <Text style={styles.heroTitle}>{recipe.title}</Text>
-              <Text style={styles.heroMeta}>{recipe.difficulty?.toUpperCase()} • {recipe.total_time_minutes || recipe.cook_time_minutes} MINS</Text>
+              <Text style={styles.heroMeta}>{recipe.difficulty?.toUpperCase()} • {recipe.estimated_time_minutes} MINS</Text>
             </View>
             <TouchableOpacity style={styles.playBtn}>
               <Ionicons name="play" size={24} color={C.onError} />
@@ -164,10 +164,10 @@ export default function RecipeDetailScreen() {
                 {(recipe.steps || []).map((step: any, idx: number) => (
                   <View key={idx} style={styles.stepRow}>
                     <View style={styles.stepNumWrap}>
-                      <Text style={styles.stepNum}>{step.step_number || idx + 1}</Text>
+                      <Text style={styles.stepNum}>{step.step || idx + 1}</Text>
                     </View>
                     <View style={styles.stepTextWrap}>
-                      <Text style={styles.stepTitle}>Step {step.step_number || idx + 1}</Text>
+                      <Text style={styles.stepTitle}>Step {step.step || idx + 1}</Text>
                       <Text style={styles.stepDesc}>{step.instruction}</Text>
                     </View>
                   </View>
