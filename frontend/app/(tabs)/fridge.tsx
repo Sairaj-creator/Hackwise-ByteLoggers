@@ -69,7 +69,7 @@ export default function FridgeScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Clear', style: 'destructive', onPress: async () => { 
           // Assuming api has clear or sequential deletes
-          await Promise.all(items.map(i => api.deleteFridgeItem(i.item_id))); 
+          await Promise.allSettled(items.map(i => api.deleteFridgeItem(i.item_id))); 
           loadItems(); 
         } 
       },

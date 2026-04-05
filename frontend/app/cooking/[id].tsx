@@ -92,7 +92,7 @@ export default function CookingModeScreen() {
           <Ionicons name="close" size={28} color={Colors.textCooking} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle} numberOfLines={1}>{data.title}</Text>
+          <Text style={styles.headerTitle} numberOfLines={1}>{data.title || "Cooking Mode"}</Text>
           <Text style={styles.stepIndicator}>Step {currentStep + 1} of {steps.length}</Text>
         </View>
         <View style={{ width: 44 }} />
@@ -118,7 +118,7 @@ export default function CookingModeScreen() {
           <View key={i} style={[styles.stepContainer, { width: SCREEN_WIDTH }]}>
             <ScrollView contentContainerStyle={styles.stepScroll}>
               <View style={styles.stepNumberCircle}>
-                <Text style={styles.stepNumberText}>{s.step_number || i + 1}</Text>
+                <Text style={styles.stepNumberText}>{s.step || i + 1}</Text>
               </View>
               <Text style={styles.stepInstruction}>{s.instruction}</Text>
 
