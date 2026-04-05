@@ -157,4 +157,10 @@ export const api = {
 
   toggleLike: (postId: string) =>
     request(`/api/v1/social/posts/${postId}/like`, { method: 'POST' }),
+
+  // Feedback
+  submitFeedback: (type: string, message: string) =>
+    request('/api/v1/feedback', { method: 'POST', body: JSON.stringify({ type, message }) }),
+
+  getFeedback: () => request('/api/v1/feedback'),
 };
