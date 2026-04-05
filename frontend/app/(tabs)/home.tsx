@@ -65,7 +65,7 @@ export default function HomeScreen() {
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="menu" size={24} color={C.primary} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>The Culinary Editorial</Text>
+        <Text style={styles.headerTitle}>Ingredia</Text>
         <TouchableOpacity testID="home-profile-btn" onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBorder}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB0Nec5iT3xElO0fPegZ3Dve3Zdw37EGdjVzwrpaYx1_xsIIwE8Y7pTUtz9yFbe18Ak-BpPCsB556uwM2LY_HXvj9PvnrQK6z2kCE8rSN8KQKCz0K6fqxDBAQ5wDD_LNdIF6NUkHzNacyd4mqL6AfV5Z9A16eW8BiuGEOGm_pVMulebrP_5B4nyVYkf_6VeyOYxjAWgHkPsW5h7wlpu5wdMSlUlEE7xAQ8Yk30zsiQ8dkN89Lp46KeYjdXCNSTprQOTkqybeLPgNZwm' }} style={styles.avatar} />
         </TouchableOpacity>

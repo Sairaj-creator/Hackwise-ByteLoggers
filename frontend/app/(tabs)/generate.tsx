@@ -169,7 +169,7 @@ export default function GenerateScreen() {
           <View style={styles.avatarBorder}>
             <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4jSkPRkcV95Ki5NsAW6RsG3TlpVNgLcKKLjbCfUithQKc6yKLtrqXQ7ElaPH_HdWaYJJM9JK0SxDvpyVwtEnNpp37D-A_hj2XDVAFr91y8I_TQ5jRnnFM5WNctNK8N0cLk4dkciBMex3GBxT7RCzYxSopH8YdxX5wV79LiZSIse1oZ63AjGZ6Q3Tm7YTC6FNKOebjZK_RmnkzCFZlyLc8R3kqU7ht8_APzlJ4t_VJwL_CEoQzVXmmXqffu86AszGfcoEMz4eivNhP' }} style={styles.avatar} />
           </View>
-          <Text style={styles.appBarBrand}>The Culinary Editorial</Text>
+          <Text style={styles.appBarBrand}>Ingredia</Text>
         </View>
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="settings-outline" size={24} color={C.onSurfaceVariant} />

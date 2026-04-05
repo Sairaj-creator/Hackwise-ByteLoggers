@@ -74,7 +74,7 @@ export default function RecipeDetailScreen() {
           <TouchableOpacity testID="recipe-back-btn" onPress={() => router.back()} style={styles.iconBtn}>
             <Ionicons name="arrow-back" size={24} color={C.primary} />
           </TouchableOpacity>
-          <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+          <Text style={styles.appBarTitle}>Ingredia</Text>
         </View>
         <View style={styles.appBarRight}>
           <TouchableOpacity testID="recipe-fav-btn" onPress={handleFavorite} style={styles.iconBtn}>
