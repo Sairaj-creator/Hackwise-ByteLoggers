@@ -45,6 +45,7 @@ def _user_to_response(user: dict) -> UserResponse:
         name=user.get("name", ""),
         email=user.get("email", ""),
         is_admin=(bool(admin_email) and user_email == admin_email),
+        bio=user.get("bio", ""),
         allergies=user.get("allergies", []),
         dietary_preferences=user.get("dietary_preferences", []),
         cuisine_preferences=user.get("cuisine_preferences", []),
@@ -168,6 +169,8 @@ async def update_profile(
 
     if request.name is not None:
         update_fields["name"] = request.name
+    if request.bio is not None:
+        update_fields["bio"] = request.bio
     if request.allergies is not None:
         update_fields["allergies"] = [a.model_dump() for a in request.allergies]
     if request.dietary_preferences is not None:

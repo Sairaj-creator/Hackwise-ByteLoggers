@@ -163,4 +163,21 @@ export const api = {
     request('/api/v1/feedback', { method: 'POST', body: JSON.stringify({ type, message }) }),
 
   getFeedback: () => request('/api/v1/feedback'),
+
+  // Location / Trending
+  getUserLocation: async() => {
+    try {
+      const res = await fetch('http://ip-api.com/json');
+      const data = await res.json();
+      return data.city ? `${data.city}, ${data.region}` : 'Seattle, WA';
+    } catch {
+      return 'Seattle, WA';
+    }
+  },
+
+  getTrendingRecipes: (location: string) => 
+    request(`/api/v1/recipes/trending?location=${encodeURIComponent(location)}`),
+
+  // Ingredients Feed
+  getIngredientsFeed: () => request('/api/v1/recipes/ingredients-feed'),
 };

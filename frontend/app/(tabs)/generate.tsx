@@ -15,6 +15,7 @@ const C = {
   secondaryContainer: '#ffc791',
   surfaceContainerLow: '#f0f1f1',
   surfaceContainerLowest: '#ffffff',
+  surfaceLowest: '#ffffff',
   surfaceContainerHigh: '#e1e3e3',
   tertiaryContainer: '#c1fd7c',
   onTertiaryContainer: '#396100',
@@ -138,7 +139,7 @@ export default function GenerateScreen() {
           </View>
           <Text style={styles.appBarBrand}>The Culinary Editorial</Text>
         </View>
-        <TouchableOpacity style={styles.iconBtn}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="settings-outline" size={24} color={C.onSurfaceVariant} />
         </TouchableOpacity>
       </View>
