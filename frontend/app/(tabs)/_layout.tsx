@@ -34,7 +34,8 @@ export default function TabsLayout() {
       <Tabs.Screen name="home" options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} /> }} />
       <Tabs.Screen name="fridge" options={{ title: 'Fridge', tabBarIcon: ({ color, size }) => <Ionicons name="basket" size={size} color={color} /> }} />
       <Tabs.Screen name="generate" options={{ title: 'Scanner', tabBarIcon: ({ color, size }) => <Ionicons name="scan" size={size} color={color} /> }} />
-      <Tabs.Screen name="feed" options={{ title: 'Feed', tabBarIcon: ({ color, size }) => <Ionicons name="sparkles" size={size} color={color} /> }} />
+      <Tabs.Screen name="feed" options={{ title: 'Feed', tabBarIcon: ({ color, size }) => <Ionicons name="leaf" size={size} color={color} /> }} />
+      <Tabs.Screen name="favorites" options={{ title: 'Favorites', tabBarIcon: ({ color, size }) => <Ionicons name="heart" size={size} color={color} /> }} />
       <Tabs.Screen name="profile" options={{ title: 'Settings', tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} /> }} />
     </Tabs>
   );

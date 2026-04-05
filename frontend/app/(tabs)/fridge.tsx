@@ -101,71 +101,10 @@ export default function FridgeScreen() {
     );
   };
 
-  const headerComponent = () => (
-    <View style={styles.contentPad}>
-      <View style={styles.heroSection}>
-        <Text style={styles.heroTitle}>My Digital Fridge</Text>
-        <Text style={styles.heroSub}>Catalog your ingredients. Let AI curate your next gourmet masterpiece based on what's available.</Text>
-      </View>
-
-      <View style={styles.addSection}>
-        <Text style={styles.addLabel}>NEW INGREDIENT</Text>
-        <View style={styles.addRow}>
-          <View style={styles.inputWrapper}>
-            <TextInput 
-              testID="fridge-name-input"
-              style={styles.input} 
-              placeholder="e.g., Organic Kale..." 
-              placeholderTextColor="rgba(172,173,173,0.5)"
-              value={name}
-              onChangeText={setName}
-            />
-            <Ionicons name="restaurant" size={20} color={C.primary} style={styles.inputIcon} />
-          </View>
-          <TouchableOpacity testID="fridge-add-btn" style={styles.addBtn} onPress={handleAdd} disabled={adding}>
-            <Text style={styles.addBtnText}>{adding ? '...' : 'ADD'}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      <View style={styles.bentoLeft}>
-        <View style={styles.statusBox}>
-          <View style={styles.statusHeader}>
-            <Ionicons name="cube" size={28} color={C.primary} />
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusBadgeText}>{items.length} ITEMS</Text>
-            </View>
-          </View>
-          <Text style={styles.statusTitle}>Fridge Status</Text>
-          <Text style={styles.statusSub}>Your current inventory is sufficient for multiple potential recipes.</Text>
-        </View>
-      </View>
-
-      <View style={styles.listHeader}>
-        <Text style={styles.listTitle}>Active Inventory</Text>
-        {items.length > 0 && (
-          <TouchableOpacity onPress={handleClearAll}>
-            <Text style={styles.clearBtnText}>CLEAR ALL</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
-  );
-
-  const footerComponent = () => (
-    <View style={styles.contentPad}>
-        <View style={styles.missingBox}>
-            <Ionicons name="sparkles" size={36} color={C.tertiary} style={{ marginBottom: 12 }} />
-            <Text style={styles.missingTitle}>Missing an essential?</Text>
-            <Text style={styles.missingSub}>Add your staples now to see even more refined recipe suggestions.</Text>
-        </View>
-    </View>
-  );
-
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.appBar}>
-        <TouchableOpacity style={styles.iconBtn}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="menu" size={24} color={C.primary} />
         </TouchableOpacity>
         <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
@@ -178,8 +117,65 @@ export default function FridgeScreen() {
         data={items}
         keyExtractor={(item) => item.item_id}
         renderItem={renderItem}
-        ListHeaderComponent={headerComponent}
-        ListFooterComponent={footerComponent}
+        ListHeaderComponent={
+          <View style={styles.contentPad}>
+            <View style={styles.heroSection}>
+              <Text style={styles.heroTitle}>My Digital Fridge</Text>
+              <Text style={styles.heroSub}>Catalog your ingredients. Let AI curate your next gourmet masterpiece based on what's available.</Text>
+            </View>
+
+            <View style={styles.addSection}>
+              <Text style={styles.addLabel}>NEW INGREDIENT</Text>
+              <View style={styles.addRow}>
+                <View style={styles.inputWrapper}>
+                  <TextInput 
+                    testID="fridge-name-input"
+                    style={styles.input} 
+                    placeholder="e.g., Organic Kale..." 
+                    placeholderTextColor="rgba(172,173,173,0.5)"
+                    value={name}
+                    onChangeText={setName}
+                  />
+                  <Ionicons name="restaurant" size={20} color={C.primary} style={styles.inputIcon} />
+                </View>
+                <TouchableOpacity testID="fridge-add-btn" style={styles.addBtn} onPress={handleAdd} disabled={adding}>
+                  <Text style={styles.addBtnText}>{adding ? '...' : 'ADD'}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.bentoLeft}>
+              <View style={styles.statusBox}>
+                <View style={styles.statusHeader}>
+                  <Ionicons name="cube" size={28} color={C.primary} />
+                  <View style={styles.statusBadge}>
+                    <Text style={styles.statusBadgeText}>{items.length} ITEMS</Text>
+                  </View>
+                </View>
+                <Text style={styles.statusTitle}>Fridge Status</Text>
+                <Text style={styles.statusSub}>Your current inventory is sufficient for multiple potential recipes.</Text>
+              </View>
+            </View>
+
+            <View style={styles.listHeader}>
+              <Text style={styles.listTitle}>Active Inventory</Text>
+              {items.length > 0 && (
+                <TouchableOpacity onPress={handleClearAll}>
+                  <Text style={styles.clearBtnText}>CLEAR ALL</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        }
+        ListFooterComponent={
+          <View style={styles.contentPad}>
+              <View style={styles.missingBox}>
+                  <Ionicons name="sparkles" size={36} color={C.tertiary} style={{ marginBottom: 12 }} />
+                  <Text style={styles.missingTitle}>Missing an essential?</Text>
+                  <Text style={styles.missingSub}>Add your staples now to see even more refined recipe suggestions.</Text>
+              </View>
+          </View>
+        }
         contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.primary} />}
       />

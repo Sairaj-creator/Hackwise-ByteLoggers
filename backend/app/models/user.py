@@ -33,6 +33,7 @@ class AllergyEntry(BaseModel):
 
 class UserProfileUpdateRequest(BaseModel):
     name: Optional[str] = None
+    bio: Optional[str] = Field(None, max_length=300)
     allergies: Optional[List[AllergyEntry]] = None
     dietary_preferences: Optional[List[str]] = None
     cuisine_preferences: Optional[List[str]] = None
@@ -61,6 +62,7 @@ class UserResponse(BaseModel):
     name: str
     email: str
     is_admin: bool = False
+    bio: str = ""
     allergies: List[AllergyEntry] = []
     dietary_preferences: List[str] = []
     cuisine_preferences: List[str] = []

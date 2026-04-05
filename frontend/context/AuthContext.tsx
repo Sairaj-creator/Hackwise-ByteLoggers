@@ -7,6 +7,7 @@ type User = {
   name: string;
   email: string;
   is_admin: boolean;
+  bio?: string;
   allergies: string[];
   dietary_preferences: string[];
   cuisine_preferences: string[];

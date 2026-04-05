@@ -4,9 +4,13 @@ Recipes Router
 Endpoints: generate, list my recipes, detail, nutrients, cooking mode, favorites.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from datetime import datetime, timezone
 from bson import ObjectId
+import json
+from google import genai
+
+from app.config import get_settings
 
 from app.dependencies import get_current_user
 from app.database.mongodb import get_database
@@ -75,6 +79,128 @@ async def generate_recipe(
     return {
         "recipe": _serialize_recipe(recipe_doc),
     }
+
+
+# ─── Trending Local Recipes (Location Based) ───
+
+@router.get("/trending")
+async def get_trending_recipes(
+    location: str = Query(default="Seattle, WA"),
+    user: dict = Depends(get_current_user),
+):
+    """Generate or fetch 4 trending local recipes based on IP-location."""
+    cache_key = make_cache_key("trending_recipes", location.strip().lower())
+    cached = await get_cached(cache_key)
+    if cached:
+        return {"location": location, "recipes": cached}
+
+    try:
+        settings = get_settings()
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+        prompt = f"""Generate 4 trending, popular, and authentic food recipes for {location}.
+Respond with ONLY valid JSON (no markdown, no code fences). The structure must be a JSON array of objects:
+[
+  {{
+    "recipe_id": "trending-local-1",
+    "title": "Authentic local dish name",
+    "cuisine": "Local category",
+    "difficulty": "Medium",
+    "total_time_minutes": 35
+  }}
+]"""
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
+
+        raw_text = response.text.strip()
+        if raw_text.startswith("```"):
+            lines = raw_text.split("\n")
+            lines = [l for l in lines if not l.strip().startswith("```")]
+            raw_text = "\n".join(lines)
+            
+        recipes_data = json.loads(raw_text)
+        
+        # Add dynamic ids
+        for idx, r in enumerate(recipes_data):
+            r["recipe_id"] = f"trending-{location.lower().replace(' ', '')}-{idx}"
+            r["total_time_minutes"] = r.get("total_time_minutes", r.get("estimated_time_minutes", 30))
+
+        # Cache for 24 hours (86400 seconds)
+        await set_cached(cache_key, recipes_data, 86400)
+
+        return {"location": location, "recipes": recipes_data}
+
+    except Exception as e:
+        import logging
+        logging.warning(f"Trending recipes fallback: {e}")
+        # Fallback payload
+        fallback = [
+             {"recipe_id": "mock-1", "title": "Local Artisan Bread", "cuisine": "Bakery", "difficulty": "Hard", "total_time_minutes": 120},
+             {"recipe_id": "mock-2", "title": "Farmhouse Salad", "cuisine": "Healthy", "difficulty": "Easy", "total_time_minutes": 15},
+             {"recipe_id": "mock-3", "title": "Regional Stew", "cuisine": "Comfort", "difficulty": "Medium", "total_time_minutes": 60},
+             {"recipe_id": "mock-4", "title": "Heritage Pasta", "cuisine": "Italian Fusion", "difficulty": "Medium", "total_time_minutes": 45},
+        ]
+        return {"location": location, "recipes": fallback}
+
+
+# ─── Ingredients Feed ───
+
+@router.get("/ingredients-feed")
+async def get_ingredients_feed(
+    user: dict = Depends(get_current_user),
+):
+    """Generate or fetch 10 healthy ingredients with nutritional info."""
+    cache_key = "ingredients_feed_daily_v3"
+    cached = await get_cached(cache_key)
+    if cached:
+        return {"ingredients": cached}
+
+    try:
+        settings = get_settings()
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+        prompt = """Generate 10 trending, highly-nutritious "superfood" ingredients. Provide at least 5-6 detailed health benefits for each ingredient.
+Respond with ONLY valid JSON (no markdown, no code fences). The structure must be a JSON array of objects:
+[
+  {
+    "id": "ing-1",
+    "name": "Avocado",
+    "calories_per_100g": 160,
+    "protein_g": 2.0,
+    "carbs_g": 8.5,
+    "fats_g": 14.7,
+    "benefits": ["Heart healthy", "Rich in fiber", "High in potassium", "Supports eye health", "Improves digestion", "Boosts brain function"]
+  }
+]"""
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt,
+        )
+
+        raw_text = response.text.strip()
+        if raw_text.startswith("```"):
+            lines = raw_text.split("\n")
+            lines = [l for l in lines if not l.strip().startswith("```")]
+            raw_text = "\n".join(lines)
+            
+        feed_data = json.loads(raw_text)
+        
+        # Cache for 24 hours
+        await set_cached(cache_key, feed_data, 86400)
+
+        return {"ingredients": feed_data}
+
+    except Exception as e:
+        import logging
+        logging.warning(f"Ingredients feed fallback: {e}")
+        # Fallback payload
+        fallback = [
+             {"id": "mock-1", "name": "Quinoa", "calories_per_100g": 120, "protein_g": 4.1, "carbs_g": 21.3, "fats_g": 1.9, "benefits": ["High protein", "Gluten-free", "Rich in iron"]},
+             {"id": "mock-2", "name": "Chia Seeds", "calories_per_100g": 486, "protein_g": 16.5, "carbs_g": 42.1, "fats_g": 30.7, "benefits": ["Omega-3 rich", "High fiber", "Antioxidants"]},
+        ]
+        return {"ingredients": fallback}
 
 
 # ─── My Recipes ───

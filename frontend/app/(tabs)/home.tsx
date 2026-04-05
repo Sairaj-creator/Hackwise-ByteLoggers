@@ -32,13 +32,22 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [fridgeData, setFridgeData] = useState<any>(null);
   const [recipes, setRecipes] = useState<any[]>([]);
+  const [trendingRecipes, setTrendingRecipes] = useState<any[]>([]);
+  const [location, setLocation] = useState<string>('Detecting location...');
   const [refreshing, setRefreshing] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
-      const [fridge, recipeData] = await Promise.all([api.getFridge(), api.getMyRecipes()]);
+      const loc = await api.getUserLocation();
+      setLocation(loc);
+      const [fridge, recipeData, trendingData] = await Promise.all([
+        api.getFridge(), 
+        api.getMyRecipes(),
+        api.getTrendingRecipes(loc)
+      ]);
       setFridgeData(fridge);
       setRecipes(recipeData.recipes || []);
+      setTrendingRecipes(trendingData.recipes || []);
     } catch {}
   }, []);
 
@@ -46,14 +55,14 @@ export default function HomeScreen() {
 
   const onRefresh = async () => { setRefreshing(true); await loadData(); setRefreshing(false); };
   
-  const heroRecipe = recipes.length > 0 ? recipes[0] : null;
-  const recentRecipes = recipes.length > 1 ? recipes.slice(1, 5) : [];
+  const heroRecipe = trendingRecipes.length > 0 ? trendingRecipes[0] : null;
+  const recentRecipes = trendingRecipes.length > 1 ? trendingRecipes.slice(1, 5) : [];
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.iconBtn}>
+        <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="menu" size={24} color={C.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>The Culinary Editorial</Text>
@@ -71,7 +80,7 @@ export default function HomeScreen() {
         <View style={styles.welcomeSection}>
           <View style={styles.locationRow}>
             <Ionicons name="location" size={14} color={C.tertiary} />
-            <Text style={styles.locationText}>KITCHEN INVENTORY</Text>
+            <Text style={styles.locationText}>LOCATION: {location.toUpperCase()}</Text>
           </View>
           <Text style={styles.welcomeTitle}>{user?.name ? `${user.name}'s\nVerdant AI Kitchen` : 'Verdant AI Kitchen'}</Text>
           <Text style={styles.welcomeSub}>Curated flavors and intelligent pairings, tailored to your available ingredients.</Text>
@@ -79,8 +88,8 @@ export default function HomeScreen() {
 
         {/* Featured Section */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.editorChoice}>EDITOR'S CHOICE</Text>
-          <Text style={styles.sectionTitle}>Trending in your Kitchen</Text>
+          <Text style={styles.editorChoice}>LOCAL TRENDS</Text>
+          <Text style={styles.sectionTitle}>Trending in {location}</Text>
         </View>
 
         {heroRecipe ? (

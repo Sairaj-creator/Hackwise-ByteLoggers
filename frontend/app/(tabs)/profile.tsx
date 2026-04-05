@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, ScrollView,
   Image, Alert, Modal, TextInput, KeyboardAvoidingView,
@@ -64,7 +64,7 @@ const DEFAULT_AVATAR = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAShg
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
 
   // Modal states
   const [versionModalVisible, setVersionModalVisible] = useState(false);
@@ -76,6 +76,17 @@ export default function ProfileScreen() {
   const [feedbackText, setFeedbackText] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Bio state
+  const [isEditingBio, setIsEditingBio] = useState(false);
+  const [bioInput, setBioInput] = useState(user?.bio || '');
+  const [savingBio, setSavingBio] = useState(false);
+
+  useEffect(() => {
+    if (user?.bio) {
+      setBioInput(user.bio);
+    }
+  }, [user?.bio]);
 
   // All feedback state
   const [allFeedback, setAllFeedback] = useState<any[]>([]);
@@ -105,6 +116,24 @@ export default function ProfileScreen() {
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const handleSaveBio = async () => {
+    if (bioInput.trim() === user?.bio) {
+      setIsEditingBio(false);
+      return;
+    }
+    setSavingBio(true);
+    try {
+      if (updateProfile) {
+        await updateProfile({ bio: bioInput.trim() });
+      }
+      setIsEditingBio(false);
+    } catch (e: any) {
+      Alert.alert('Error', e.message || 'Failed to update bio.');
+    } finally {
+      setSavingBio(false);
+    }
   };
 
   const handleLogout = () => {
@@ -179,12 +208,61 @@ export default function ProfileScreen() {
         {/* Description Area */}
         <View style={styles.descSection}>
           <View style={styles.descHeader}>
-            <Ionicons name="document-text" size={20} color={C.secondaryContainer} />
-            <Text style={styles.descHeaderTitle}>Description</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="document-text" size={20} color={C.secondaryContainer} />
+              <Text style={styles.descHeaderTitle}>Description</Text>
+            </View>
+            {!isEditingBio ? (
+              <TouchableOpacity onPress={() => setIsEditingBio(true)} style={styles.editBioBtn}>
+                <Ionicons name="pencil" size={14} color={C.onSurfaceVariant} />
+                <Text style={styles.editBioBtnText}>Edit</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
-          <Text style={styles.descText}>
-            Passionate about farm-to-table AI-assisted gastronomy. Currently exploring plant-based Italian fusions and optimizing kitchen efficiency through smart pantry tracking.
-          </Text>
+          
+          {isEditingBio ? (
+            <View style={styles.bioEditWrap}>
+              <TextInput
+                style={styles.bioInput}
+                multiline
+                numberOfLines={3}
+                textAlignVertical="top"
+                value={bioInput}
+                onChangeText={setBioInput}
+                placeholder="Write a little about your culinary journey..."
+                placeholderTextColor={C.outline}
+                maxLength={300}
+                autoFocus
+              />
+              <View style={styles.bioActions}>
+                <TouchableOpacity 
+                  disabled={savingBio} 
+                  onPress={() => {
+                    setBioInput(user?.bio || '');
+                    setIsEditingBio(false);
+                  }} 
+                  style={styles.bioCancelBtn}
+                >
+                  <Text style={styles.bioCancelText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  disabled={savingBio} 
+                  onPress={handleSaveBio} 
+                  style={styles.bioSaveBtn}
+                >
+                  {savingBio ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={styles.bioSaveText}>Save</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <Text style={styles.descText}>
+              {user?.bio || 'Passionate about farm-to-table AI-assisted gastronomy. Currently exploring plant-based Italian fusions and optimizing kitchen efficiency through smart pantry tracking.'}
+            </Text>
+          )}
         </View>
 
         {/* Actions Bento Grid */}
@@ -494,9 +572,23 @@ const styles = StyleSheet.create({
     backgroundColor: C.surfaceContainerLowest, borderRadius: 24, padding: 24,
     shadowColor: '#000', shadowOpacity: 0.02, shadowRadius: 10, elevation: 1, marginBottom: 24,
   },
-  descHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 },
+  descHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   descHeaderTitle: { fontSize: 16, fontWeight: 'bold', color: C.onSurface },
   descText: { fontSize: 14, color: C.onSurfaceVariant, lineHeight: 22 },
+  editBioBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, backgroundColor: C.surfaceContainerLow, borderRadius: 12 },
+  editBioBtnText: { fontSize: 12, fontWeight: '600', color: C.onSurfaceVariant },
+  bioEditWrap: { marginTop: 4 },
+  bioInput: {
+    backgroundColor: C.surfaceContainerLow, borderRadius: 12, padding: 12,
+    fontSize: 14, color: C.onSurface, minHeight: 80, borderWidth: 1, borderColor: C.surfaceContainerHigh,
+    lineHeight: 22,
+  },
+  bioActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 10, marginTop: 12 },
+  bioCancelBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, backgroundColor: C.surfaceContainerHigh },
+  bioCancelText: { fontSize: 13, fontWeight: '600', color: C.onSurfaceVariant },
+  bioSaveBtn: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 12, backgroundColor: C.primary, minWidth: 64, alignItems: 'center' },
+  bioSaveText: { fontSize: 13, fontWeight: '700', color: '#fff' },
+
   actionsGrid: { gap: 16 },
   actionBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
