@@ -82,7 +82,7 @@ export default function FeedScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.appBar}>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="filter" size={24} color={C.onSurfaceVariant} />
         </TouchableOpacity>

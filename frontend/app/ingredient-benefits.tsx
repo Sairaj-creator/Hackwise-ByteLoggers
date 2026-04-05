@@ -32,7 +32,7 @@ export default function IngredientBenefitsScreen() {
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color={C.primary} />
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="bookmark-outline" size={24} color={C.primary} />
         </TouchableOpacity>

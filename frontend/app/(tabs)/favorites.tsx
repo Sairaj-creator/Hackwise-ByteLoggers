@@ -106,7 +106,7 @@ export default function FavoritesScreen() {
             <Image source={{ uri: DEFAULT_AVATAR }} style={styles.headerAvatar} />
           </View>
         </View>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="search-outline" size={24} color={C.onSurfaceVariant} />
         </TouchableOpacity>

@@ -74,7 +74,7 @@ export default function RecipeDetailScreen() {
           <TouchableOpacity testID="recipe-back-btn" onPress={() => router.back()} style={styles.iconBtn}>
             <Ionicons name="arrow-back" size={24} color={C.primary} />
           </TouchableOpacity>
-          <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+          <Text style={styles.appBarTitle}>Ingredia</Text>
         </View>
         <View style={styles.appBarRight}>
           <TouchableOpacity testID="recipe-fav-btn" onPress={handleFavorite} style={styles.iconBtn}>
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 16, backgroundColor: C.primary,
     alignItems: 'center', justifyContent: 'center', marginTop: 2
   },
-  stepNum: { color: C.surfaceLowest, fontSize: 14, fontWeight: 'bold' },
+  stepNum: { color: C.surfaceContainerLowest, fontSize: 14, fontWeight: 'bold' },
   stepTextWrap: { flex: 1 },
   stepTitle: { fontSize: 16, fontWeight: 'bold', color: C.onSurface, marginBottom: 8 },
   stepDesc: { fontSize: 14, color: C.onSurfaceVariant, lineHeight: 22 },
@@ -292,14 +292,14 @@ const styles = StyleSheet.create({
   },
   mcLeft: { flexDirection: 'row', alignItems: 'center', gap: 24 },
   mcIconWrap: {
-    width: 80, height: 80, backgroundColor: C.surfaceLowest, borderRadius: 16,
+    width: 80, height: 80, backgroundColor: C.surfaceContainerLowest, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10,
   },
   mcTexts: { flex: 1 },
   mcTitle: { fontSize: 20, fontWeight: 'bold', color: C.onSecondaryContainer },
   mcDesc: { fontSize: 14, color: C.onSecondaryContainer, opacity: 0.8 },
   mcBtn: {
-    backgroundColor: C.surfaceLowest, paddingVertical: 12, paddingHorizontal: 32,
+    backgroundColor: C.surfaceContainerLowest, paddingVertical: 12, paddingHorizontal: 32,
     borderRadius: 24, alignItems: 'center', marginTop: 16
   },
   mcBtnText: { color: C.secondary, fontSize: 16, fontWeight: 'bold' },

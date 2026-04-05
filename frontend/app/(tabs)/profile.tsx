@@ -180,7 +180,7 @@ export default function ProfileScreen() {
             <Image source={{ uri: DEFAULT_AVATAR }} style={styles.headerAvatar} />
           </View>
         </View>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="settings-outline" size={24} color={C.onSurfaceVariant} />
         </TouchableOpacity>
@@ -327,7 +327,7 @@ export default function ProfileScreen() {
 
         {/* App Meta */}
         <View style={styles.appMeta}>
-          <Text style={styles.metaText}>HACKWISE BYTELOGGERS · V{APP_VERSION} · INITIAL RELEASE</Text>
+          <Text style={styles.metaText}>INGREDIA · V{APP_VERSION} · INITIAL RELEASE</Text>
         </View>
       </ScrollView>
 

@@ -107,7 +107,7 @@ export default function FridgeScreen() {
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="menu" size={24} color={C.primary} />
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBorder}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBMn-7UTbtA9AV_trb3iqPgg9s8LUPc-QALMijIWZveNhkriknrphL6eSw7S7OWkBmmNSZ8WCe1B66r2K3coBmKn8fGaKCQe9EewwryLjcPMc2tOMm24uWA4ADTtnyR9Olm8JumcjjyZ4FBFrow0wHKDLefDuEeqzK5PGGv-RtzhDWRfyYNQZ_HWd0FRQdZ2Vbo1X7Z2b6gOkP1EBcJqyBsx1SbR5pDWR2S38Q_ruuimqRsYJgFjC5Rhszc7_P9rqO8uRvkdxLlJEXU' }} style={styles.avatar} />
         </TouchableOpacity>
