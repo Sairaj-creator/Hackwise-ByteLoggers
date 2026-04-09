@@ -8,7 +8,7 @@ type User = {
   email: string;
   is_admin: boolean;
   bio?: string;
-  allergies: string[];
+  allergies: { allergen: string; severity: string }[];
   dietary_preferences: string[];
   cuisine_preferences: string[];
 } | null;

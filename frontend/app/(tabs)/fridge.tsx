@@ -107,7 +107,7 @@ export default function FridgeScreen() {
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="menu" size={24} color={C.primary} />
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+        <Text style={styles.appBarTitle}>Ingredia</Text>
         <TouchableOpacity onPress={() => router.push('/(tabs)/profile')} style={styles.avatarBorder}>
           <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBMn-7UTbtA9AV_trb3iqPgg9s8LUPc-QALMijIWZveNhkriknrphL6eSw7S7OWkBmmNSZ8WCe1B66r2K3coBmKn8fGaKCQe9EewwryLjcPMc2tOMm24uWA4ADTtnyR9Olm8JumcjjyZ4FBFrow0wHKDLefDuEeqzK5PGGv-RtzhDWRfyYNQZ_HWd0FRQdZ2Vbo1X7Z2b6gOkP1EBcJqyBsx1SbR5pDWR2S38Q_ruuimqRsYJgFjC5Rhszc7_P9rqO8uRvkdxLlJEXU' }} style={styles.avatar} />
         </TouchableOpacity>
@@ -180,10 +180,11 @@ export default function FridgeScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.primary} />}
       />
 
-      <View style={styles.fabWrapper}>
-        <TouchableOpacity style={styles.fab} onPress={() => router.push('/(tabs)/generate')}>
-          <Text style={styles.fabText}>GENERATE RECIPES</Text>
-          <Ionicons name="chevron-forward" size={18} color={C.onPrimary} style={{fontWeight:'bold'}} />
+      <View style={[styles.bottomBar, { paddingBottom: insets.bottom || 16 }]}>
+        <TouchableOpacity style={styles.bottomBtn} onPress={() => router.push('/(tabs)/generate')}>
+          <Ionicons name="sparkles" size={20} color={C.onPrimary} />
+          <Text style={styles.bottomBtnText}>GENERATE RECIPES</Text>
+          <Ionicons name="chevron-forward" size={18} color={C.onPrimary} />
         </TouchableOpacity>
       </View>
     </View>
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 16, borderWidth: 1, borderColor: 'rgba(0,107,27,0.2)', overflow: 'hidden',
   },
   avatar: { width: '100%', height: '100%' },
-  listContent: { paddingBottom: 160 },
+  listContent: { paddingBottom: 24 },
   contentPad: { paddingHorizontal: 24 },
   heroSection: { marginTop: 24, marginBottom: 40 },
   heroTitle: { fontSize: 30, fontWeight: '900', color: C.onSurface, letterSpacing: -0.5, marginBottom: 8 },
@@ -247,11 +248,14 @@ const styles = StyleSheet.create({
   },
   missingTitle: { fontSize: 18, fontWeight: 'bold', color: C.onSurface, textAlign: 'center' },
   missingSub: { fontSize: 14, color: C.onSurfaceVariant, textAlign: 'center', marginTop: 8, maxWidth: 250 },
-  fabWrapper: { position: 'absolute', bottom: 100, left: 0, right: 0, alignItems: 'flex-end', paddingHorizontal: 24 },
-  fab: {
-    backgroundColor: C.primary, flexDirection: 'row', alignItems: 'center', gap: 12,
-    paddingHorizontal: 32, paddingVertical: 20, borderRadius: 40,
-    shadowColor: C.primary, shadowOffset: { width: 0, height: 20 }, shadowOpacity: 0.3, shadowRadius: 50, elevation: 8,
+  bottomBar: {
+    backgroundColor: C.surfaceLowest,
+    paddingHorizontal: 24, paddingTop: 16,
+    borderTopWidth: 1, borderTopColor: C.surfaceLow,
   },
-  fabText: { fontSize: 18, fontWeight: '900', color: C.onPrimary, letterSpacing: 0.5 },
+  bottomBtn: {
+    backgroundColor: C.primary, flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'center', gap: 12, paddingVertical: 18, borderRadius: 16,
+  },
+  bottomBtnText: { fontSize: 17, fontWeight: '900', color: C.onPrimary, letterSpacing: 0.5 },
 });

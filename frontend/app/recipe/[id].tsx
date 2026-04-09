@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator, Linking } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { api } from '@/services/api';
@@ -74,7 +74,7 @@ export default function RecipeDetailScreen() {
           <TouchableOpacity testID="recipe-back-btn" onPress={() => router.back()} style={styles.iconBtn}>
             <Ionicons name="arrow-back" size={24} color={C.primary} />
           </TouchableOpacity>
-          <Text style={styles.appBarTitle}>The Culinary Editorial</Text>
+          <Text style={styles.appBarTitle}>Ingredia</Text>
         </View>
         <View style={styles.appBarRight}>
           <TouchableOpacity testID="recipe-fav-btn" onPress={handleFavorite} style={styles.iconBtn}>
@@ -95,7 +95,7 @@ export default function RecipeDetailScreen() {
               <Text style={styles.heroTitle}>{recipe.title}</Text>
               <Text style={styles.heroMeta}>{recipe.difficulty?.toUpperCase()} • {recipe.estimated_time_minutes} MINS</Text>
             </View>
-            <TouchableOpacity style={styles.playBtn}>
+            <TouchableOpacity style={styles.playBtn} onPress={() => router.push(`/cooking/${recipe.recipe_id}`)}>
               <Ionicons name="play" size={24} color={C.onError} />
             </TouchableOpacity>
           </View>
@@ -195,7 +195,14 @@ export default function RecipeDetailScreen() {
               <Text style={styles.mcDesc}>Follow Chef's visual guide.</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.mcBtn}>
+          <TouchableOpacity
+            style={styles.mcBtn}
+            onPress={() => {
+              const query = recipe.youtube_search_query || recipe.title || '';
+              const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+              Linking.openURL(url);
+            }}
+          >
             <Text style={styles.mcBtnText}>Watch on YouTube</Text>
           </TouchableOpacity>
         </View>

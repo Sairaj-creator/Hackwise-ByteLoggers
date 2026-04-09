@@ -163,21 +163,66 @@ export const api = {
   toggleLike: (postId: string) =>
     request(`/api/v1/social/posts/${postId}/like`, { method: 'POST' }),
 
+  addComment: (postId: string, text: string) =>
+    request(`/api/v1/social/posts/${postId}/comment`, {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }),
+
+  createPost: async (recipeId: string, content: string): Promise<any> => {
+    const token = await getToken();
+    const formData = new FormData();
+    formData.append('recipe_id', recipeId);
+    formData.append('content', content);
+
+    const headers: any = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch(`${API_BASE}/api/v1/social/posts`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Post failed: ${res.status}`);
+    }
+    return res.json();
+  },
+
   // Feedback
   submitFeedback: (type: string, message: string) =>
     request('/api/v1/feedback', { method: 'POST', body: JSON.stringify({ type, message }) }),
 
   getFeedback: () => request('/api/v1/feedback'),
 
-  // Location / Trending
-  getUserLocation: async() => {
+  // Location / Trending — cached in AsyncStorage for 6 hours to avoid frequent changes
+  getUserLocation: async (): Promise<string> => {
+    const CACHE_KEY = 'user_location_cache';
+    const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
     try {
-      const res = await fetch('http://ip-api.com/json');
+      const raw = await AsyncStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const { location, timestamp } = JSON.parse(raw);
+        if (location && Date.now() - timestamp < CACHE_TTL_MS) {
+          return location;
+        }
+      }
+    } catch {}
+
+    try {
+      const res = await fetch('http://ip-api.com/json?fields=city,regionName,country,status');
       const data = await res.json();
-      return data.city ? `${data.city}, ${data.region}` : 'Seattle, WA';
-    } catch {
-      return 'Seattle, WA';
-    }
+      if (data.status === 'success' && data.city) {
+        const location = `${data.city}, ${data.regionName}`;
+        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify({ location, timestamp: Date.now() }));
+        return location;
+      }
+    } catch {}
+
+    return 'Mumbai, Maharashtra';
   },
 
   getTrendingRecipes: (location: string) => 

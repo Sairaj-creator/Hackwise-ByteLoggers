@@ -4,7 +4,7 @@ Recipe Models
 Pydantic models for recipe generation, detail, and nutrition.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -25,31 +25,42 @@ class RecipeStep(BaseModel):
 
 class AllergyCheckResult(BaseModel):
     safe: bool = True
-    warnings: List[Dict] = []
-    substitutions: List[Dict] = []
-    checked_against: List[str] = []
+    warnings: List[Dict] = Field(default_factory=list)
+    substitutions: List[Dict] = Field(default_factory=list)
+    checked_against: List[str] = Field(default_factory=list)
     auto_regenerated: bool = False
 
 
 class WasteImpact(BaseModel):
-    ingredients_saved_from_expiry: List[str] = []
+    ingredients_saved_from_expiry: List[str] = Field(default_factory=list)
     waste_prevented_grams: int = 0
 
 
 class NutritionData(BaseModel):
     total_calories: int = 0
-    per_serving: Dict[str, float] = {}
-    health_benefits: List[str] = []
-    source: str = "stub"
+    per_serving: Dict[str, float] = Field(default_factory=dict)
+    health_benefits: List[str] = Field(default_factory=list)
+    source: str = "mock"
 
 
 # ─── Request Models ───
 
 class RecipeGenerateRequest(BaseModel):
-    ingredients: List[str]
-    preferences: Dict[str, Any] = {}
+    ingredients: List[str] = Field(default_factory=list)
+    raw_text_input: Optional[str] = None
+    preferences: Dict[str, Any] = Field(default_factory=dict)
+    dietary_preferences: List[str] = Field(default_factory=list)
     prioritize_expiring: bool = True
-    servings: int = 2
+    servings: int = Field(default=2, validation_alias=AliasChoices("servings", "number_of_people"))
+
+    @field_validator("dietary_preferences", mode="before")
+    @classmethod
+    def _coerce_dietary_preferences(cls, value):
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return [value.strip()] if value.strip() else []
+        return [str(item).strip() for item in value if str(item).strip()]
 
 
 # ─── Response Models ───
@@ -62,10 +73,10 @@ class RecipeResponse(BaseModel):
     estimated_time_minutes: int = 0
     difficulty: str = "easy"
     servings: int = 2
-    ingredients: List[RecipeIngredient] = []
-    preparation_steps: List[RecipeStep] = []
+    ingredients: List[RecipeIngredient] = Field(default_factory=list)
+    preparation_steps: List[RecipeStep] = Field(default_factory=list)
     youtube_search_query: str = ""
-    tags: List[str] = []
+    tags: List[str] = Field(default_factory=list)
     allergy_check: AllergyCheckResult = AllergyCheckResult()
     waste_impact: WasteImpact = WasteImpact()
     nutrition_data: Optional[NutritionData] = None

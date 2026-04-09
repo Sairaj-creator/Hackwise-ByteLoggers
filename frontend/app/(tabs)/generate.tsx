@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { api } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const C = {
@@ -32,6 +33,7 @@ const DEFAULT_IMG = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?i
 export default function GenerateScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { user } = useAuth();
   const [fridgeItems, setFridgeItems] = useState<any[]>([]);
   const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
   const [generating, setGenerating] = useState(false);
@@ -116,15 +118,15 @@ export default function GenerateScreen() {
     try {
       const data = await api.generateRecipe({
         ingredients: selectedIngredients,
-        servings: 2,
+        number_of_people: 2,
+        dietary_preferences: user?.dietary_preferences || [],
         preferences: {
           cuisine: '',
-          dietary: '',
-          max_time_minutes: 30,
+          max_time_minutes: '30',
           spice_level: 'medium',
         },
       });
-      setRecipe(data.recipe || data);
+      setRecipe(data.recipe ?? data);
     } catch (e: any) {
       setError(e.message || 'Generation failed');
     } finally {
@@ -169,7 +171,7 @@ export default function GenerateScreen() {
           <View style={styles.avatarBorder}>
             <Image source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC4jSkPRkcV95Ki5NsAW6RsG3TlpVNgLcKKLjbCfUithQKc6yKLtrqXQ7ElaPH_HdWaYJJM9JK0SxDvpyVwtEnNpp37D-A_hj2XDVAFr91y8I_TQ5jRnnFM5WNctNK8N0cLk4dkciBMex3GBxT7RCzYxSopH8YdxX5wV79LiZSIse1oZ63AjGZ6Q3Tm7YTC6FNKOebjZK_RmnkzCFZlyLc8R3kqU7ht8_APzlJ4t_VJwL_CEoQzVXmmXqffu86AszGfcoEMz4eivNhP' }} style={styles.avatar} />
           </View>
-          <Text style={styles.appBarBrand}>The Culinary Editorial</Text>
+          <Text style={styles.appBarBrand}>Ingredia</Text>
         </View>
         <TouchableOpacity style={styles.iconBtn} onPress={() => router.push('/(tabs)/profile')}>
           <Ionicons name="settings-outline" size={24} color={C.onSurfaceVariant} />
@@ -223,12 +225,58 @@ export default function GenerateScreen() {
           </TouchableOpacity>
         </View>
 
+        {/* Fridge Quick-Select */}
+        {fridgeItems.length > 0 && (
+          <View style={styles.fridgeBox}>
+            <View style={styles.detectedHeader}>
+              <Text style={styles.detectedTitle}>From Your Fridge</Text>
+              <TouchableOpacity onPress={() => {
+                const allNames = fridgeItems.map((i: any) => i.name);
+                setSelectedIngredients(prev => {
+                  const merged = [...prev];
+                  allNames.forEach((n: string) => { if (!merged.includes(n)) merged.push(n); });
+                  return merged;
+                });
+              }}>
+                <Text style={styles.addAllText}>+ ADD ALL</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.chipWrap}>
+              {fridgeItems.map((item: any, index: number) => {
+                const already = selectedIngredients.includes(item.name);
+                return (
+                  <TouchableOpacity
+                    key={item.item_id || index}
+                    style={[styles.fridgeChip, already && styles.fridgeChipSelected]}
+                    onPress={() => {
+                      if (already) {
+                        removeIngredient(item.name);
+                      } else {
+                        setSelectedIngredients(prev => [...prev, item.name]);
+                      }
+                    }}
+                  >
+                    <Ionicons
+                      name={already ? 'checkmark-circle' : 'add-circle-outline'}
+                      size={14}
+                      color={already ? C.primary : C.onSurfaceVariant}
+                    />
+                    <Text style={[styles.fridgeChipText, already && styles.fridgeChipTextSelected]}>
+                      {item.name}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
         <View style={styles.detectedBox}>
           <View style={styles.detectedHeader}>
-            <Text style={styles.detectedTitle}>Recently Detected</Text>
+            <Text style={styles.detectedTitle}>Selected Ingredients</Text>
             <Text style={styles.detectedSession}>LIVE SESSION</Text>
           </View>
-          
+
           <View style={styles.chipWrap}>
             {selectedIngredients.map((item, index) => (
               <View key={`${item}-${index}`} style={styles.chip}>
@@ -239,7 +287,7 @@ export default function GenerateScreen() {
               </View>
             ))}
             {selectedIngredients.length === 0 && (
-              <Text style={{color: C.onSurfaceVariant, fontSize: 13, marginTop: 4}}>No ingredients detected yet.</Text>
+              <Text style={{color: C.onSurfaceVariant, fontSize: 13, marginTop: 4}}>No ingredients selected yet. Scan, upload, or pick from your fridge above.</Text>
             )}
           </View>
         </View>
@@ -378,6 +426,18 @@ const styles = StyleSheet.create({
   badgeText: { fontSize: 14, color: C.onSurfaceVariant, fontWeight: '600' },
   viewFullBtn: { backgroundColor: C.primary, borderRadius: 16, paddingVertical: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12, marginTop: 40 },
   viewFullText: { color: C.surfaceContainerLowest, fontSize: 18, fontWeight: 'bold' },
+
+  // Fridge quick-select
+  fridgeBox: { marginTop: 40, backgroundColor: C.surfaceContainerLowest, borderRadius: 24, padding: 24 },
+  addAllText: { fontSize: 11, fontWeight: '800', color: C.primary, letterSpacing: 1 },
+  fridgeChip: {
+    flexDirection: 'row', alignItems: 'center', gap: 6,
+    backgroundColor: C.surfaceContainerHigh, paddingHorizontal: 14, paddingVertical: 8,
+    borderRadius: 20, borderWidth: 1, borderColor: 'transparent',
+  },
+  fridgeChipSelected: { backgroundColor: C.tertiaryContainer, borderColor: C.primary },
+  fridgeChipText: { fontSize: 13, fontWeight: '600', color: C.onSurfaceVariant },
+  fridgeChipTextSelected: { color: C.primary },
 
   // Modal
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 },

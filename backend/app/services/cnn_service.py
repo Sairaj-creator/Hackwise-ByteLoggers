@@ -1,149 +1,201 @@
 """
-CNN SERVICE — INGREDIENT DETECTION FROM IMAGES
-===============================================
-Status: LIVE — Uses YOLOv8n pretrained model
+Ingredient detection service.
 
-CONTRACT:
-  Input:  Raw image bytes (JPEG/PNG, max 10MB)
-  Output: List of detected ingredients with confidence scores
+Primary path:
+- Gemini 2.5 Flash multimodal ingredient detection
 
-INTEGRATION POINT:
-  Called by: POST /api/v1/fridge/scan endpoint (routers/fridge.py)
-  Model location: backend/ai_models/yolov8n.pt
+Fallback path:
+- Local YOLOv8 COCO model for common produce classes
 """
 
-from typing import List, Optional
-from pydantic import BaseModel
-from ultralytics import YOLO
-import tempfile
-import time
-import os
+from __future__ import annotations
+
+import io
 import logging
+import os
+import time
+from functools import lru_cache
+from typing import List
 
-logger = logging.getLogger(__name__)
+from pydantic import BaseModel, ConfigDict, Field
 
+from app.services.gemini_common import generate_content_text, parse_json_payload
 
-# ============ INPUT/OUTPUT CONTRACTS (unchanged) ============
+logger = logging.getLogger("uvicorn.error")
+
+try:
+    from PIL import Image
+except Exception:  # pragma: no cover - handled at runtime
+    Image = None
+
+try:
+    from ultralytics import YOLO
+except Exception:  # pragma: no cover - handled at runtime
+    YOLO = None
+
 
 class DetectedIngredient(BaseModel):
     name: str
-    confidence: float
-    bounding_box: Optional[dict] = None
+    confidence: float = Field(ge=0.0, le=1.0)
 
 
 class CNNScanResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     detected_ingredients: List[DetectedIngredient]
     processing_time_ms: int
     model_version: str
 
 
-# ============ MODEL LOADING ============
+MODEL_PATHS = [
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ai_models", "yolov8n.pt")),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "backend", "ai_models", "yolov8n.pt")),
+]
 
-# Path to your model — adjust if your directory is different
-MODEL_PATH = os.path.join(
-    os.path.dirname(__file__),  # backend/app/services/
-    "..", "..",                  # backend/
-    "ai_models", "yolov8n.pt"   # backend/ai_models/yolov8n.pt
-)
-MODEL_PATH = os.path.abspath(MODEL_PATH)
-
-# COCO food class IDs that YOLOv8n can detect
-FOOD_CLASSES = {
+YOLO_FOOD_CLASSES = {
     46: "banana",
     47: "apple",
-    48: "sandwich",
     49: "orange",
     50: "broccoli",
     51: "carrot",
-    52: "hot dog",
-    53: "pizza",
-    54: "donut",
-    55: "cake",
 }
-FOOD_CLASS_IDS = set(FOOD_CLASSES.keys())
 
-# Confidence threshold — lowered to 0.15 to catch more items (nano model struggles sometimes)
-CONFIDENCE_THRESHOLD = 0.15
+VISION_PROMPT = """
+Identify all visible food ingredients in this image.
+Return ONLY a valid JSON array like:
+[{"name":"tomato","confidence":0.92}]
 
-# Load model once at module import
-_model = None
+Rules:
+- Use simple lowercase ingredient names.
+- Include only edible ingredients or produce, not cookware or packaging.
+- If an item is a prepared dish, name its main visible ingredient if clear; otherwise omit it.
+- Confidence must be between 0.0 and 1.0.
+- No markdown, no commentary.
+""".strip()
 
 
-def _get_model():
-    global _model
-    if _model is None:
-        if not os.path.exists(MODEL_PATH):
-            raise FileNotFoundError(
-                f"Model not found at {MODEL_PATH}. "
-                f"Make sure yolov8n.pt is in backend/ai_models/"
+def _normalize_name(name: str) -> str:
+    cleaned = (name or "").strip().lower()
+    replacements = {
+        "bell peppers": "bell pepper",
+        "capsicum": "bell pepper",
+        "tomatoes": "tomato",
+        "onions": "onion",
+        "potatoes": "potato",
+        "chilies": "chili",
+        "chillies": "chili",
+    }
+    return replacements.get(cleaned, cleaned)
+
+
+def _dedupe(ingredients: List[DetectedIngredient]) -> List[DetectedIngredient]:
+    by_name: dict[str, DetectedIngredient] = {}
+    for ingredient in ingredients:
+        existing = by_name.get(ingredient.name)
+        if existing is None or ingredient.confidence > existing.confidence:
+            by_name[ingredient.name] = ingredient
+    return sorted(by_name.values(), key=lambda item: item.confidence, reverse=True)
+
+
+@lru_cache(maxsize=1)
+def _get_yolo_model():
+    if YOLO is None:
+        return None
+
+    for path in MODEL_PATHS:
+        if os.path.exists(path):
+            logger.info("Loading YOLO vision fallback from %s", path)
+            return YOLO(path)
+    return None
+
+
+async def _detect_with_gemini(image_bytes: bytes) -> List[DetectedIngredient]:
+    if Image is None:
+        raise RuntimeError("Pillow is not installed")
+
+    image = Image.open(io.BytesIO(image_bytes))
+    raw_text = await generate_content_text(VISION_PROMPT, model_name="gemini-2.5-flash", media=image)
+    items = parse_json_payload(raw_text, prefer_array=True)
+
+    detected: List[DetectedIngredient] = []
+    for item in items if isinstance(items, list) else []:
+        if not isinstance(item, dict) or "name" not in item:
+            continue
+        name = _normalize_name(str(item.get("name", "")))
+        if not name:
+            continue
+        try:
+            confidence = float(item.get("confidence", 0.8))
+        except (TypeError, ValueError):
+            confidence = 0.8
+        detected.append(
+            DetectedIngredient(
+                name=name,
+                confidence=max(0.0, min(1.0, confidence)),
             )
-        logger.info(f"Loading YOLOv8 model from {MODEL_PATH}")
-        _model = YOLO(MODEL_PATH)
-        logger.info("Model loaded successfully")
-    return _model
+        )
+    return _dedupe(detected)
 
 
-# ============ REAL IMPLEMENTATION ============
+async def _detect_with_yolo(image_bytes: bytes) -> List[DetectedIngredient]:
+    model = _get_yolo_model()
+    if model is None:
+        return []
 
-async def detect_ingredients_from_image(image_bytes: bytes) -> CNNScanResponse:
-    """
-    Detect food ingredients from image bytes using YOLOv8n.
+    import tempfile
 
-    Called by: routers/fridge.py → POST /api/v1/fridge/scan
-    Usage:     result = await detect_ingredients_from_image(image_bytes)
-    """
-    model = _get_model()
-
-    # Write image bytes to a temp file (YOLO needs a file path)
-    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
-        tmp.write(image_bytes)
-        tmp_path = tmp.name
-
+    temp_path = None
     try:
-        # Run inference
-        start = time.time()
-        results = model(tmp_path, conf=CONFIDENCE_THRESHOLD, verbose=False)[0]
-        processing_time = int((time.time() - start) * 1000)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+            tmp.write(image_bytes)
+            temp_path = tmp.name
 
-        # Extract food detections
-        detected = []
+        results = model(temp_path, conf=0.15, verbose=False)[0]
+        detected: List[DetectedIngredient] = []
         for box in results.boxes:
             cls_id = int(box.cls[0])
-            conf = float(box.conf[0])
-
-            # Only keep food items
-            if cls_id not in FOOD_CLASS_IDS:
+            if cls_id not in YOLO_FOOD_CLASSES:
                 continue
-
-            name = FOOD_CLASSES[cls_id]
-            coords = box.xyxy[0].tolist()
-
-            detected.append(DetectedIngredient(
-                name=name.title(),
-                confidence=round(conf, 2),
-                bounding_box={
-                    "x1": round(coords[0], 1),
-                    "y1": round(coords[1], 1),
-                    "x2": round(coords[2], 1),
-                    "y2": round(coords[3], 1),
-                },
-            ))
-
-        # Deduplicate — keep highest confidence per ingredient name
-        unique = {}
-        for d in detected:
-            if d.name not in unique or d.confidence > unique[d.name].confidence:
-                unique[d.name] = d
-
-        return CNNScanResponse(
-            detected_ingredients=list(unique.values()),
-            processing_time_ms=processing_time,
-            model_version="yolov8n-coco-v1",
-        )
-
-    except Exception as e:
-        logger.error(f"Detection failed: {e}")
-        raise
-
+            detected.append(
+                DetectedIngredient(
+                    name=YOLO_FOOD_CLASSES[cls_id],
+                    confidence=max(0.0, min(1.0, float(box.conf[0]))),
+                )
+            )
+        return _dedupe(detected)
     finally:
-        os.unlink(tmp_path)
+        if temp_path and os.path.exists(temp_path):
+            try:
+                os.unlink(temp_path)
+            except OSError:
+                logger.debug("Failed to remove temp image %s", temp_path)
+
+
+async def detect_ingredients_from_image(image_bytes: bytes) -> CNNScanResponse:
+    start = time.perf_counter()
+
+    try:
+        detected = await _detect_with_gemini(image_bytes)
+        if detected:
+            return CNNScanResponse(
+                detected_ingredients=detected,
+                processing_time_ms=int((time.perf_counter() - start) * 1000),
+                model_version="gemini-2.5-flash-vision-mvp",
+            )
+    except Exception as exc:
+        logger.warning("Gemini vision ingredient detection failed: %s", exc)
+
+    try:
+        detected = await _detect_with_yolo(image_bytes)
+        return CNNScanResponse(
+            detected_ingredients=detected,
+            processing_time_ms=int((time.perf_counter() - start) * 1000),
+            model_version="yolov8n-coco-fallback",
+        )
+    except Exception as exc:
+        logger.warning("YOLO fallback ingredient detection failed: %s", exc)
+        return CNNScanResponse(
+            detected_ingredients=[],
+            processing_time_ms=int((time.perf_counter() - start) * 1000),
+            model_version="ingredient-detection-empty-fallback",
+        )

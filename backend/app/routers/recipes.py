@@ -10,7 +10,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 import json
 import re
-from google import genai
+from huggingface_hub import InferenceClient
 
 from app.config import get_settings
 
@@ -85,6 +85,13 @@ async def generate_recipe(
 ):
     db = get_database()
 
+    if not request.ingredients and not request.raw_text_input:
+        raise HTTPException(400, "Provide either ingredients or raw_text_input")
+
+    merged_preferences = dict(request.preferences or {})
+    if request.dietary_preferences and not merged_preferences.get("dietary_preferences"):
+        merged_preferences["dietary_preferences"] = request.dietary_preferences
+
     # Find expiring items if requested
     expiring_items = []
     if request.prioritize_expiring:
@@ -99,10 +106,11 @@ async def generate_recipe(
     try:
         result = await generate_recipe_pipeline(
             ingredients=request.ingredients,
-            preferences=request.preferences,
+            preferences=merged_preferences,
             user_allergies=user.get("allergies", []),
             expiring_items=expiring_items,
             servings=request.servings,
+            raw_text_input=request.raw_text_input,
         )
     except Exception as exc:
         _log.error("generate_recipe_pipeline raised: %s", exc, exc_info=True)
@@ -128,6 +136,7 @@ async def generate_recipe(
         "user_id": user["_id"],
         "allergy_check": result.get("allergy_check", {}),
         "waste_impact": result.get("waste_impact", {}),
+        "pipeline_stages": result.get("pipeline_stages", {}),
         "favorites_count": 0,
         "times_cooked": 0,
         "created_at": datetime.now(timezone.utc),
@@ -138,6 +147,9 @@ async def generate_recipe(
 
     return {
         "recipe": _serialize_recipe(recipe_doc),
+        "allergy_check": result.get("allergy_check", {}),
+        "waste_impact": result.get("waste_impact", {}),
+        "pipeline_stages": result.get("pipeline_stages", {}),
     }
 
 
@@ -158,7 +170,8 @@ async def get_trending_recipes(
 
     try:
         settings = get_settings()
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        client = InferenceClient(api_key=settings.HUGGINGFACE_API_KEY)
+        model_id = "mistralai/Mistral-7B-Instruct-v0.3"
 
         prompt = f"""Generate 4 trending, popular, and authentic food recipes for {location}.
 Respond with ONLY valid JSON (no markdown, no code fences). The structure must be a JSON array of objects:
@@ -171,12 +184,16 @@ Respond with ONLY valid JSON (no markdown, no code fences). The structure must b
     "total_time_minutes": 35
   }}
 ]"""
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt,
-        )
-
-        raw_text = response.text.strip()
+        raw_text = ""
+        for message in client.chat_completion(
+            model=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1000,
+            stream=True,
+        ):
+            raw_text += message.choices[0].delta.content or ""
+            
+        raw_text = raw_text.strip()
         recipes_data = _parse_gemini_json(raw_text)
 
         # Add dynamic ids
@@ -212,7 +229,8 @@ async def get_ingredients_feed(
 
     try:
         settings = get_settings()
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        client = InferenceClient(api_key=settings.HUGGINGFACE_API_KEY)
+        model_id = "mistralai/Mistral-7B-Instruct-v0.3"
 
         prompt = """Generate 10 trending, highly-nutritious "superfood" ingredients. Provide at least 5-6 detailed health benefits for each ingredient.
 Respond with ONLY valid JSON (no markdown, no code fences). The structure must be a JSON array of objects:
@@ -227,12 +245,16 @@ Respond with ONLY valid JSON (no markdown, no code fences). The structure must b
     "benefits": ["Heart healthy", "Rich in fiber", "High in potassium", "Supports eye health", "Improves digestion", "Boosts brain function"]
   }
 ]"""
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt,
-        )
-
-        raw_text = response.text.strip()
+        raw_text = ""
+        for message in client.chat_completion(
+            model=model_id,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=1500,
+            stream=True,
+        ):
+            raw_text += message.choices[0].delta.content or ""
+            
+        raw_text = raw_text.strip()
         feed_data = _parse_gemini_json(raw_text)
 
         # Cache in Redis and in-memory
@@ -359,16 +381,21 @@ async def get_recipe_nutrients(recipe_id: str, user: dict = Depends(get_current_
 
     # Call Gemini nutrition stub
     from app.services.gemini_nutrition_service import get_nutrition_data, NutritionRequest
+    from app.database.redis import get_redis
 
     try:
         ingredients = [
             {"name": ing.get("name", ""), "quantity": ing.get("quantity", "")}
             for ing in recipe.get("ingredients", [])
         ]
+        try:
+            redis_client = get_redis()
+        except Exception:
+            redis_client = None
         nutrition = await get_nutrition_data(NutritionRequest(
             ingredients=ingredients,
             servings=recipe.get("servings", 2),
-        ))
+        ), redis_client=redis_client)
         result = nutrition.model_dump()
     except Exception:
         return {"error": "Nutrition data unavailable. Try again later."}
@@ -465,7 +492,7 @@ def _serialize_recipe(doc: dict, is_favorited: bool = False) -> dict:
         "allergy_check": doc.get("allergy_check", {}),
         "waste_impact": doc.get("waste_impact", {}),
         "nutrition_data": doc.get("nutrition_data"),
-        "nutrition_per_serving": doc.get("nutrition_data"),
+        "nutrition_per_serving": (doc.get("nutrition_data") or {}).get("per_serving", doc.get("nutrition_data")),
         "is_favorited": is_favorited,
         "favorites_count": doc.get("favorites_count", 0),
         "times_cooked": doc.get("times_cooked", 0),
