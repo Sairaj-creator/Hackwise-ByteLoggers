@@ -4,7 +4,7 @@ Recipes Router
 Endpoints: generate, list my recipes, detail, nutrients, cooking mode, favorites.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -13,6 +13,7 @@ import re
 from huggingface_hub import InferenceClient
 
 from app.config import get_settings
+from app.rate_limiter import limiter
 
 from app.dependencies import get_current_user
 from app.database.mongodb import get_database
@@ -79,22 +80,24 @@ def _parse_gemini_json(raw_text: str):
 # ─── Generate Recipe ───
 
 @router.post("/generate")
+@limiter.limit(get_settings().RATE_LIMIT_RECIPE_GENERATE)
 async def generate_recipe(
-    request: RecipeGenerateRequest,
+    request: Request,
+    payload: RecipeGenerateRequest,
     user: dict = Depends(get_current_user),
 ):
     db = get_database()
 
-    if not request.ingredients and not request.raw_text_input:
+    if not payload.ingredients and not payload.raw_text_input:
         raise HTTPException(400, "Provide either ingredients or raw_text_input")
 
-    merged_preferences = dict(request.preferences or {})
-    if request.dietary_preferences and not merged_preferences.get("dietary_preferences"):
-        merged_preferences["dietary_preferences"] = request.dietary_preferences
+    merged_preferences = dict(payload.preferences or {})
+    if payload.dietary_preferences and not merged_preferences.get("dietary_preferences"):
+        merged_preferences["dietary_preferences"] = payload.dietary_preferences
 
     # Find expiring items if requested
     expiring_items = []
-    if request.prioritize_expiring:
+    if payload.prioritize_expiring:
         items = await db.fridge_items.find({
             "user_id": user["_id"],
             "is_used": False,
@@ -105,12 +108,12 @@ async def generate_recipe(
     # Generate via the pipeline
     try:
         result = await generate_recipe_pipeline(
-            ingredients=request.ingredients,
+            ingredients=payload.ingredients,
             preferences=merged_preferences,
             user_allergies=user.get("allergies", []),
             expiring_items=expiring_items,
-            servings=request.servings,
-            raw_text_input=request.raw_text_input,
+            servings=payload.servings,
+            raw_text_input=payload.raw_text_input,
         )
     except Exception as exc:
         _log.error("generate_recipe_pipeline raised: %s", exc, exc_info=True)

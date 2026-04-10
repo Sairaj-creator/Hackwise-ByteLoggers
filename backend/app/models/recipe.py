@@ -68,6 +68,7 @@ class RecipeGenerateRequest(BaseModel):
 class RecipeResponse(BaseModel):
     id: str = ""
     recipe_id: str = ""
+    status: Optional[str] = None
     title: str
     cuisine: str = ""
     estimated_time_minutes: int = 0
@@ -77,13 +78,15 @@ class RecipeResponse(BaseModel):
     preparation_steps: List[RecipeStep] = Field(default_factory=list)
     youtube_search_query: str = ""
     tags: List[str] = Field(default_factory=list)
-    allergy_check: AllergyCheckResult = AllergyCheckResult()
-    waste_impact: WasteImpact = WasteImpact()
+    similarity_score: Optional[float] = None
+    allergy_check: AllergyCheckResult = Field(default_factory=AllergyCheckResult)
+    waste_impact: WasteImpact = Field(default_factory=WasteImpact)
     nutrition_data: Optional[NutritionData] = None
     is_favorited: bool = False
     favorites_count: int = 0
     times_cooked: int = 0
     created_at: Optional[datetime] = None
+    last_cooked_at: Optional[datetime] = None
 
 
 class RecipeListResponse(BaseModel):

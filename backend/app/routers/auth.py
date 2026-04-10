@@ -4,7 +4,7 @@ Auth Router
 Endpoints: register, login, refresh, profile GET/PUT, allergy profile.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, Request, status
 from datetime import datetime, timezone
 from bson import ObjectId
 
@@ -18,6 +18,7 @@ from app.dependencies import (
 )
 from app.database.mongodb import get_database
 from app.config import get_settings
+from app.rate_limiter import limiter
 from app.models.user import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -112,12 +113,13 @@ async def register(request: UserRegisterRequest):
 # ─── Login ───
 
 @router.post("/login")
-async def login(request: UserLoginRequest):
+@limiter.limit(get_settings().RATE_LIMIT_LOGIN)
+async def login(request: Request, payload: UserLoginRequest):
     db = get_database()
-    email_lower = request.email.lower().strip()
+    email_lower = payload.email.lower().strip()
 
     user = await db.users.find_one({"email": email_lower})
-    if not user or not verify_password(request.password, user["password_hash"]):
+    if not user or not verify_password(payload.password, user["password_hash"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",

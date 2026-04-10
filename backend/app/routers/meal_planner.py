@@ -4,13 +4,15 @@ Meal Planner Router
 Endpoints: generate plan (async), get plan, swap meal, shopping list.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from datetime import datetime, timezone
 from bson import ObjectId
 import uuid
 
 from app.dependencies import get_current_user
 from app.database.mongodb import get_database
+from app.config import get_settings
+from app.rate_limiter import limiter
 from app.models.meal_plan import (
     MealPlanGenerateRequest,
     MealSwapRequest,
@@ -23,8 +25,10 @@ router = APIRouter(prefix="/api/v1/meal-planner", tags=["Meal Planner"])
 # ─── Generate Meal Plan (async via Celery) ───
 
 @router.post("/generate")
+@limiter.limit(get_settings().RATE_LIMIT_MEAL_PLAN)
 async def generate_meal_plan(
-    request: MealPlanGenerateRequest,
+    request: Request,
+    payload: MealPlanGenerateRequest,
     user: dict = Depends(get_current_user),
 ):
     db = get_database()
@@ -34,11 +38,11 @@ async def generate_meal_plan(
     plan_doc = {
         "_id": ObjectId(plan_id),
         "user_id": user["_id"],
-        "duration_days": request.duration_days,
-        "meals_per_day": request.meals_per_day,
-        "calorie_target": request.calorie_target_per_day,
-        "dietary_goal": request.dietary_goal,
-        "cuisine_preferences": request.cuisine_preferences,
+        "duration_days": payload.duration_days,
+        "meals_per_day": payload.meals_per_day,
+        "calorie_target": payload.calorie_target_per_day,
+        "dietary_goal": payload.dietary_goal,
+        "cuisine_preferences": payload.cuisine_preferences,
         "status": "generating",
         "progress_percent": 0,
         "days": [],
@@ -55,7 +59,7 @@ async def generate_meal_plan(
         generate_meal_plan_task.delay(
             str(user["_id"]),
             plan_id,
-            request.model_dump(),
+            payload.model_dump(),
         )
     except Exception:
         # Celery not available — generate synchronously as fallback
@@ -74,11 +78,11 @@ async def generate_meal_plan(
             fridge_items=fridge_names,
             expiring_items=expiring,
             user_allergies=user.get("allergies", []),
-            preferences={"cuisine": ",".join(request.cuisine_preferences)},
-            duration_days=request.duration_days,
-            meals_per_day=request.meals_per_day,
-            calorie_target=request.calorie_target_per_day,
-            dietary_goal=request.dietary_goal,
+            preferences={"cuisine": ",".join(payload.cuisine_preferences)},
+            duration_days=payload.duration_days,
+            meals_per_day=payload.meals_per_day,
+            calorie_target=payload.calorie_target_per_day,
+            dietary_goal=payload.dietary_goal,
         )
 
         await db.meal_plans.update_one(

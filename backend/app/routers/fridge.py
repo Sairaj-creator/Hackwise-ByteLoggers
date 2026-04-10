@@ -4,13 +4,15 @@ Fridge Router
 Endpoints: list fridge, scan image, manual add, cart import, update, delete.
 """
 
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, Request, UploadFile, File
 from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 from typing import List
 
 from app.dependencies import get_current_user
 from app.database.mongodb import get_database
+from app.config import get_settings
+from app.rate_limiter import limiter
 from app.services.waste_tracker_service import (
     get_default_expiry,
     calculate_expiry_status,
@@ -70,7 +72,9 @@ async def get_fridge(user: dict = Depends(get_current_user)):
 # ─── Scan Image ───
 
 @router.post("/scan")
+@limiter.limit(get_settings().RATE_LIMIT_IMAGE_SCAN)
 async def scan_ingredients(
+    request: Request,
     image: UploadFile = File(...),
     user: dict = Depends(get_current_user),
 ):
