@@ -452,6 +452,7 @@ async def cooking_mode(recipe_id: str, user: dict = Depends(get_current_user)):
 @router.post("/{recipe_id}/done-cooking")
 async def done_cooking(recipe_id: str, user: dict = Depends(get_current_user)):
     db = get_database()
+    now = datetime.now(timezone.utc)
     
     try:
         oid = ObjectId(recipe_id)
@@ -460,7 +461,7 @@ async def done_cooking(recipe_id: str, user: dict = Depends(get_current_user)):
         
     result = await db.recipes.update_one(
         {"_id": oid},
-        {"$inc": {"times_cooked": 1}}
+        {"$inc": {"times_cooked": 1}, "$set": {"last_cooked_at": now}}
     )
     
     if result.matched_count == 0:
@@ -480,6 +481,7 @@ def _serialize_recipe(doc: dict, is_favorited: bool = False) -> dict:
         "title": doc.get("title", ""),
         "description": doc.get("description", ""),
         "image_url": doc.get("image_url", ""),
+        "status": doc.get("status"),
         "cuisine": doc.get("cuisine", ""),
         "estimated_time_minutes": doc.get("estimated_time_minutes", 0),
         "difficulty": doc.get("difficulty", "easy"),
@@ -489,6 +491,7 @@ def _serialize_recipe(doc: dict, is_favorited: bool = False) -> dict:
         "steps": doc.get("preparation_steps", []),
         "youtube_search_query": doc.get("youtube_search_query", ""),
         "tags": doc.get("tags", []),
+        "similarity_score": doc.get("similarity_score"),
         "allergy_check": doc.get("allergy_check", {}),
         "waste_impact": doc.get("waste_impact", {}),
         "nutrition_data": doc.get("nutrition_data"),
@@ -496,5 +499,6 @@ def _serialize_recipe(doc: dict, is_favorited: bool = False) -> dict:
         "is_favorited": is_favorited,
         "favorites_count": doc.get("favorites_count", 0),
         "times_cooked": doc.get("times_cooked", 0),
+        "last_cooked_at": str(doc.get("last_cooked_at", "")) if doc.get("last_cooked_at") else None,
         "created_at": str(doc.get("created_at", "")) if doc.get("created_at") else None,
     }

@@ -56,9 +56,19 @@ async def generate_recipe_pipeline(
         cuisine = preferences.get("cuisine")
         dietary_preferences = _coerce_preferences(preferences.get("dietary_preferences", preferences.get("dietary", [])))
 
+    input_recipe = {"ingredients": [{"name": ingredient, "quantity": "as needed"} for ingredient in normalized_ingredients]}
+    input_allergy_result = await allergy_check(input_recipe, user_allergies)
+    excluded_from_input = [
+        warning.get("ingredient", "")
+        for warning in input_allergy_result.get("warnings", [])
+        if warning.get("ingredient")
+    ]
+    safe_ingredients = [ingredient for ingredient in normalized_ingredients if ingredient not in {item.lower() for item in excluded_from_input}]
+    prediction_ingredients = safe_ingredients or normalized_ingredients
+
     prediction = await predict_recipe(
         {
-            "ingredients": normalized_ingredients,
+            "ingredients": prediction_ingredients,
             "cuisine": cuisine,
             "dietary_preferences": dietary_preferences,
             "number_of_people": servings,
@@ -69,7 +79,7 @@ async def generate_recipe_pipeline(
                 for allergen in user_allergies
             ],
             "expiring_items": expiring_items,
-            "exclude_ingredients": [],
+            "exclude_ingredients": excluded_from_input,
         }
     )
     recipe = to_generated_recipe(prediction, max_time_minutes=int(preferences.get("max_time_minutes", 30) or 30))
@@ -81,7 +91,7 @@ async def generate_recipe_pipeline(
             excluded = [warning.get("ingredient", "") for warning in severe if warning.get("ingredient")]
             regenerated = await predict_recipe(
                 {
-                    "ingredients": normalized_ingredients,
+                    "ingredients": [ingredient for ingredient in normalized_ingredients if ingredient not in {item.lower() for item in excluded}] or normalized_ingredients,
                     "cuisine": cuisine,
                     "dietary_preferences": dietary_preferences,
                     "number_of_people": servings,
@@ -99,8 +109,27 @@ async def generate_recipe_pipeline(
             allergy_result = await allergy_check(recipe.model_dump(), user_allergies)
             allergy_result["auto_regenerated"] = True
 
+    if input_allergy_result.get("warnings"):
+        existing_warnings = {
+            (warning.get("ingredient"), warning.get("allergen"))
+            for warning in allergy_result.get("warnings", [])
+        }
+        for warning in input_allergy_result.get("warnings", []):
+            key = (warning.get("ingredient"), warning.get("allergen"))
+            if key not in existing_warnings:
+                allergy_result.setdefault("warnings", []).append(warning)
+        for substitution in input_allergy_result.get("substitutions", []):
+            if substitution not in allergy_result.get("substitutions", []):
+                allergy_result.setdefault("substitutions", []).append(substitution)
+        allergy_result["safe"] = False
+        allergy_result["auto_regenerated"] = bool(excluded_from_input) or allergy_result.get("auto_regenerated", False)
+
     result = {
-        "recipe": recipe.model_dump(),
+        "recipe": {
+            **recipe.model_dump(),
+            "status": prediction.status,
+            "similarity_score": prediction.similarity_score,
+        },
         "allergy_check": allergy_result,
         "waste_impact": _calculate_waste_impact(recipe, expiring_items),
         "pipeline_stages": {
